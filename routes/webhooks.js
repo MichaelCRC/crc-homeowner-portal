@@ -78,10 +78,43 @@ router.post('/stage-update', async (req, res) => {
 
 // POST /webhook/companycam
 // CompanyCam webhook — stores photos directly to job record.
-// NO API KEY. Webhook is the only data source.
+// Authenticated via HMAC-SHA1 signature using COMPANYCAM_WEBHOOK_SECRET.
+// Webhook registered via CompanyCam API using their access token.
 router.post('/companycam', (req, res) => {
-  const { project, photo, photos: photoBatch } = req.body;
-  if (!project && !photo) return res.status(400).json({ error: 'No project or photo data' });
+  // Verify CompanyCam signature if secret is configured
+  const webhookSecret = process.env.COMPANYCAM_WEBHOOK_SECRET;
+  if (webhookSecret) {
+    const crypto = require('crypto');
+    const signature = req.headers['x-companycam-signature'];
+    if (!signature) {
+      console.log('[Webhook] companycam: missing X-CompanyCam-Signature header');
+      return res.status(401).json({ error: 'Missing signature' });
+    }
+    const rawBody = JSON.stringify(req.body);
+    const expected = crypto.createHmac('sha1', webhookSecret).update(rawBody).digest('base64');
+    // Timing-safe comparison
+    try {
+      if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+        console.log('[Webhook] companycam: invalid signature');
+        return res.status(401).json({ error: 'Invalid signature' });
+      }
+    } catch {
+      console.log('[Webhook] companycam: signature length mismatch');
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+  }
+
+  // CompanyCam webhook payload format: { event_type, created_at, payload, webhook_id }
+  // For photo.created: payload is the photo object with a nested .project
+  const payload = req.body.payload || req.body;
+  const eventType = req.body.event_type || '';
+
+  // Extract project — could be nested in photo, or top-level
+  const photo = (eventType.startsWith('photo.') ? payload : payload.photo) || null;
+  const project = photo?.project || payload.project || payload;
+  const photoBatch = payload.photos;
+
+  if (!project?.id && !photo) return res.status(400).json({ error: 'No project or photo data' });
 
   const { normalizePhoto } = require('../services/companycam');
   const all = jobService.getAllJobs();
