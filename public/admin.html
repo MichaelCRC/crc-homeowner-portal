@@ -248,6 +248,14 @@
   </header>
 
   <div class="container">
+    <!-- LOADING STATE -->
+    <div id="admin-loading" style="text-align:center;padding:80px 24px">
+      <p style="font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray-400)">Loading jobs…</p>
+    </div>
+
+    <!-- MAIN CONTENT (hidden until loaded) -->
+    <div id="admin-content" style="display:none">
+
     <!-- STATS — per stage counts (clickable filters) -->
     <div class="stats-row" id="stats-row"></div>
 
@@ -307,6 +315,8 @@
       <h2 id="detail-title">Job Detail</h2>
       <div id="detail-content"></div>
     </div>
+
+    </div><!-- /admin-content -->
   </div>
 
   <!-- NEW JOB MODAL -->
@@ -390,8 +400,14 @@
       try {
         const res = await fetch('/api/admin/jobs');
         jobs = await res.json();
+        document.getElementById('admin-loading').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
         applyFilters();
-      } catch (err) { console.error('Failed to load jobs:', err); }
+      } catch (err) {
+        console.error('Failed to load jobs:', err);
+        document.getElementById('admin-loading').innerHTML =
+          '<p style="font-size:12px;font-weight:700;color:var(--gray-400)">Failed to load. Server may be starting up — refresh in a moment.</p>';
+      }
     }
 
     // ── FILTER + SORT ───────────────────────
