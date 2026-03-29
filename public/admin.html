@@ -516,8 +516,9 @@
           <td class="meta">${formatDate(j.updatedAt)}</td>
           <td>
             <div class="actions">
-              <button class="action-btn" onclick="viewJob('${j.id}')">View</button>
-              <button class="action-btn" onclick="copyPortalLink('${j.token}')">Link</button>
+              <button class="action-btn" onclick="viewJob('${j.id}')">Detail</button>
+              <button class="action-btn" onclick="openPortal('${j.token}')" title="Preview customer view">Preview</button>
+              <button class="action-btn" onclick="copyPortalLink('${j.token}')" title="Copy portal link">Copy Link</button>
             </div>
           </td>
         </tr>
