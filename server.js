@@ -46,6 +46,18 @@ app.get('/', (req, res) => {
   res.redirect('/admin');
 });
 
+// Global error handler — never dump raw errors to client
+app.use((err, req, res, next) => {
+  console.error('[Error]', err.message, err.stack?.split('\n')[1] || '');
+  if (req.path.startsWith('/api/portal/')) {
+    // Homeowner-facing: friendly message
+    res.status(500).json({ error: 'Something went wrong. Please try again or contact CRC directly.' });
+  } else {
+    // Admin/webhook: specific message
+    res.status(500).json({ error: `Server error: ${err.message}` });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`CRC Homeowner Portal running on port ${PORT}`);
 });

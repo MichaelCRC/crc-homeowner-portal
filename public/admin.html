@@ -561,7 +561,7 @@
         });
         showToast(`Stage → ${STAGES.find(s => s.id === stage)?.label}`);
         loadJobs();
-      } catch { showToast('Failed'); }
+      } catch (err) { showToast('Stage update failed — check server connection'); }
     }
 
     // Close dropdowns on outside click
@@ -654,7 +654,7 @@
         showToast('Stage updated');
         loadJobs();
         viewJob(jobId);
-      } catch { showToast('Failed'); }
+      } catch (err) { showToast('Stage update failed — check server connection'); }
     }
 
     // ── CREATE JOB ──────────────────────────
@@ -679,7 +679,7 @@
           loadJobs();
           if (result.job?.homeowner?.email) showToast('Portal link sent to homeowner');
         }
-      } catch { showToast('Failed to create job'); }
+      } catch (err) { showToast('Job creation failed — check server connection'); }
     });
 
     // ── HELPERS ─────────────────────────────
@@ -693,7 +693,7 @@
         const res = await fetch(`/api/admin/jobs/${jobId}/resend-link`, { method: 'POST' });
         const data = await res.json();
         showToast(data.message || 'Link sent');
-      } catch { showToast('Failed to send'); }
+      } catch (err) { showToast('Email send failed — check SendGrid config'); }
     }
     function formatDate(iso) {
       if (!iso) return '';

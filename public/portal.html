@@ -533,7 +533,7 @@
   <!-- ERROR STATE -->
   <div id="error-page" class="error-page" style="display:none">
     <h1>404</h1>
-    <p>This portal link is invalid or has expired. Contact CRC if you need access.</p>
+    <p>This portal link is invalid or has expired. Please contact CRC at <strong>614-907-4CRC</strong> or <strong>claims@columbusroofingco.com</strong> if you need access.</p>
   </div>
 
   <!-- MAIN APP -->
@@ -864,10 +864,10 @@
           renderProgress();
           fileInput.value = '';
         } else {
-          showToast('Upload failed — try again');
+          showToast('Something went wrong. Please try again or contact CRC directly.');
         }
       } catch {
-        showToast('Upload failed — try again');
+        showToast('Something went wrong. Please try again or contact CRC directly.');
       }
     }
 
@@ -896,7 +896,7 @@
           renderMessages();
         }
       } catch {
-        showToast('Failed to send — try again');
+        showToast('Something went wrong. Please try again or contact CRC directly.');
       }
       btn.disabled = false;
       btn.textContent = 'Send Message';
