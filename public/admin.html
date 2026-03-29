@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRC — Homeowner Portal Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #111111;
+      --white: #FFFFFF;
+      --gray-100: #F8F8F8;
+      --gray-200: #E5E5E5;
+      --gray-300: #CCCCCC;
+      --gray-400: #999999;
+      --gray-500: #666666;
+      --green: #1A7A1A;
+      --red: #CC0000;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 2px solid var(--black);
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-logo { height: 44px; }
+    .header-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* SECTION HEADERS */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 2px solid var(--black);
+      background: var(--black);
+      color: var(--white);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--white); color: var(--black); }
+    .btn-sm { padding: 6px 14px; font-size: 10px; }
+    .btn-outline { background: var(--white); color: var(--black); }
+    .btn-outline:hover { background: var(--black); color: var(--white); }
+    .btn-danger { border-color: var(--red); background: var(--red); }
+    .btn-danger:hover { background: var(--white); color: var(--red); }
+
+    /* TABLE */
+    .job-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .job-table th {
+      text-align: left;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      padding: 12px 12px;
+      border-bottom: 2px solid var(--black);
+    }
+    .job-table td {
+      padding: 14px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--gray-200);
+      vertical-align: middle;
+    }
+    .job-table tr:hover td { background: var(--gray-100); }
+    .job-table .address {
+      font-weight: 700;
+    }
+    .job-table .meta {
+      font-size: 11px;
+      color: var(--gray-400);
+    }
+
+    /* STAGE BADGE */
+    .stage-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+    }
+    .stage-badge.s1 { border-color: var(--gray-300); }
+    .stage-badge.s2 { border-color: var(--black); }
+    .stage-badge.s3 { border-color: var(--black); background: var(--gray-100); }
+    .stage-badge.s4 { border-color: var(--black); background: var(--black); color: var(--white); }
+    .stage-badge.s5 { border-color: var(--green); color: var(--green); }
+    .stage-badge.s6 { background: var(--black); color: var(--white); border-color: var(--black); }
+
+    /* ACTIONS */
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+    .action-btn {
+      padding: 4px 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      color: var(--black);
+    }
+    .action-btn:hover { border-color: var(--black); }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px;
+      overflow-y: auto;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--white);
+      width: 100%;
+      max-width: 640px;
+      padding: 32px;
+    }
+    .modal h2 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--black);
+    }
+
+    /* FORM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+    @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      border: 2px solid var(--gray-200);
+      background: var(--white);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--black);
+    }
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* DETAIL PANEL */
+    .detail-panel {
+      display: none;
+      border: 2px solid var(--black);
+      padding: 32px;
+      margin-top: 32px;
+    }
+    .detail-panel.show { display: block; }
+    .detail-panel h2 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--black);
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 13px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label {
+      font-weight: 800;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+    }
+    .portal-link {
+      font-family: monospace;
+      font-size: 12px;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      word-break: break-all;
+      margin: 8px 0;
+      display: block;
+    }
+
+    /* STAGE CONTROLS */
+    .stage-controls {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .stage-btn {
+      padding: 6px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 2px solid var(--gray-200);
+      background: var(--white);
+      color: var(--black);
+    }
+    .stage-btn:hover { border-color: var(--black); }
+    .stage-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
+
+    /* EMPTY STATE */
+    .empty {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--gray-400);
+      font-size: 14px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--black);
+      color: var(--white);
+      padding: 14px 28px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      flex: 1;
+      min-width: 120px;
+      border-left: 3px solid var(--black);
+      padding-left: 16px;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .header { padding: 12px 16px; }
+      .container { padding: 20px 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .modal { padding: 20px; }
+      .stats-row { gap: 16px; }
+      .stat-value { font-size: 24px; }
+      .job-table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <img src="/static/crc_logo.png" alt="CRC" class="header-logo">
+      <span class="header-title">Portal Admin</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- STATS -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- JOBS LIST -->
+    <div class="section-header">
+      <span class="section-title">All Jobs</span>
+      <button class="btn" onclick="openNewJobModal()">+ New Job</button>
+    </div>
+
+    <table class="job-table" id="job-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Homeowner</th>
+          <th>Carrier</th>
+          <th>Stage</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="job-tbody"></tbody>
+    </table>
+
+    <div class="empty" id="empty-state" style="display:none">No jobs yet. Create one to get started.</div>
+
+    <!-- DETAIL PANEL -->
+    <div class="detail-panel" id="detail-panel">
+      <h2 id="detail-title">Job Detail</h2>
+      <div id="detail-content"></div>
+    </div>
+  </div>
+
+  <!-- NEW JOB MODAL -->
+  <div class="modal-overlay" id="new-job-modal">
+    <div class="modal">
+      <h2>Create New Job</h2>
+      <form id="new-job-form">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Property Address *</label>
+            <input type="text" name="address" required placeholder="123 Main St, Columbus, OH 43215">
+          </div>
+          <div class="form-group">
+            <label>Homeowner Name</label>
+            <input type="text" name="homeownerName" placeholder="John Smith">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="homeownerEmail" placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" name="homeownerPhone" placeholder="614-555-0100">
+          </div>
+          <div class="form-group">
+            <label>Insurance Carrier</label>
+            <input type="text" name="carrier" placeholder="State Farm">
+          </div>
+          <div class="form-group">
+            <label>Claim Number</label>
+            <input type="text" name="claimNumber" placeholder="CLM-123456">
+          </div>
+          <div class="form-group">
+            <label>Adjuster Name</label>
+            <input type="text" name="adjusterName">
+          </div>
+          <div class="form-group">
+            <label>Adjuster Phone</label>
+            <input type="tel" name="adjusterPhone">
+          </div>
+          <div class="form-group">
+            <label>Adjuster Email</label>
+            <input type="email" name="adjusterEmail">
+          </div>
+          <div class="form-group">
+            <label>CompanyCam Project ID</label>
+            <input type="text" name="companycamProjectId" placeholder="Optional">
+          </div>
+          <div class="form-group full">
+            <label>Notes</label>
+            <textarea name="notes" rows="3" placeholder="Internal notes..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn">Create Job</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let jobs = [];
+    const STAGES = [
+      { id: 1, label: 'Claim Filed' },
+      { id: 2, label: 'Adjuster Scheduled' },
+      { id: 3, label: 'Scope Received' },
+      { id: 4, label: 'Supplement In Review' },
+      { id: 5, label: 'Approved & Scheduled' },
+      { id: 6, label: 'Project Complete' }
+    ];
+
+    // ── LOAD ────────────────────────────────
+    async function loadJobs() {
+      try {
+        const res = await fetch('/api/admin/jobs');
+        jobs = await res.json();
+        renderJobs();
+      } catch (err) {
+        console.error('Failed to load jobs:', err);
+      }
+    }
+
+    function renderJobs() {
+      const tbody = document.getElementById('job-tbody');
+      const empty = document.getElementById('empty-state');
+
+      if (jobs.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        renderStats();
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = jobs.map(j => `
+        <tr>
+          <td><span class="address">${j.address || '—'}</span></td>
+          <td>${j.homeowner?.name || '—'}<br><span class="meta">${j.homeowner?.email || ''}</span></td>
+          <td>${j.carrier || '—'}<br><span class="meta">${j.claimNumber || ''}</span></td>
+          <td><span class="stage-badge s${j.stage}">${j.stageLabel}</span></td>
+          <td class="meta">${formatDate(j.createdAt)}</td>
+          <td>
+            <div class="actions">
+              <button class="action-btn" onclick="viewJob('${j.id}')">View</button>
+              <button class="action-btn" onclick="copyPortalLink('${j.token}')">Link</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      renderStats();
+    }
+
+    function renderStats() {
+      const total = jobs.length;
+      const active = jobs.filter(j => j.stage < 6).length;
+      const supplements = jobs.filter(j => j.stage === 4).length;
+      const complete = jobs.filter(j => j.stage === 6).length;
+
+      document.getElementById('stats-row').innerHTML = `
+        <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Total Jobs</div></div>
+        <div class="stat"><div class="stat-value">${active}</div><div class="stat-label">Active</div></div>
+        <div class="stat"><div class="stat-value">${supplements}</div><div class="stat-label">In Supplement</div></div>
+        <div class="stat"><div class="stat-value">${complete}</div><div class="stat-label">Complete</div></div>
+      `;
+    }
+
+    // ── VIEW JOB ────────────────────────────
+    async function viewJob(id) {
+      try {
+        const res = await fetch(`/api/admin/jobs/${id}`);
+        const job = await res.json();
+        const panel = document.getElementById('detail-panel');
+        const stageLabel = STAGES.find(s => s.id === job.stage)?.label || 'Unknown';
+        const baseUrl = window.location.origin;
+
+        document.getElementById('detail-title').textContent = job.address || 'Job Detail';
+        document.getElementById('detail-content').innerHTML = `
+          <div class="detail-row"><span class="detail-label">Homeowner</span><span>${job.homeowner?.name || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Email</span><span>${job.homeowner?.email || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Phone</span><span>${job.homeowner?.phone || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Carrier</span><span>${job.carrier || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Claim #</span><span>${job.claimNumber || '—'}</span></div>
+          <div class="detail-row"><span class="detail-label">Adjuster</span><span>${job.adjuster?.name || '—'} ${job.adjuster?.phone ? '· ' + job.adjuster.phone : ''}</span></div>
+          <div class="detail-row"><span class="detail-label">Stage</span><span class="stage-badge s${job.stage}">${stageLabel}</span></div>
+          <div class="detail-row"><span class="detail-label">Documents</span><span>${job.documents?.length || 0}</span></div>
+          <div class="detail-row"><span class="detail-label">Messages</span><span>${job.messages?.length || 0}</span></div>
+          <div class="detail-row"><span class="detail-label">Created</span><span>${formatDate(job.createdAt)}</span></div>
+
+          <div style="margin-top:20px">
+            <span class="detail-label">Portal Link</span>
+            <code class="portal-link">${baseUrl}/portal/${job.token}</code>
+          </div>
+
+          <div style="margin-top:16px">
+            <span class="detail-label">Set Stage</span>
+            <div class="stage-controls">
+              ${STAGES.map(s => `
+                <button class="stage-btn ${s.id === job.stage ? 'active' : ''}" onclick="setStage('${job.id}', ${s.id})">${s.label}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div style="margin-top:24px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="openPortal('${job.token}')">Open Portal</button>
+            <button class="btn btn-sm btn-outline" onclick="resendLink('${job.id}')">Resend Link</button>
+            <button class="btn btn-sm btn-outline" onclick="copyPortalLink('${job.token}')">Copy Link</button>
+          </div>
+        `;
+        panel.classList.add('show');
+        panel.scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        showToast('Failed to load job');
+      }
+    }
+
+    // ── STAGE UPDATE ────────────────────────
+    async function setStage(jobId, stage) {
+      try {
+        await fetch(`/api/admin/jobs/${jobId}/stage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage, note: 'Manual override from admin' })
+        });
+        showToast(`Stage updated`);
+        loadJobs();
+        viewJob(jobId);
+      } catch { showToast('Failed'); }
+    }
+
+    // ── CREATE JOB ──────────────────────────
+    function openNewJobModal() {
+      document.getElementById('new-job-modal').classList.add('show');
+    }
+    function closeModal() {
+      document.getElementById('new-job-modal').classList.remove('show');
+    }
+
+    document.getElementById('new-job-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const data = Object.fromEntries(form);
+
+      try {
+        const res = await fetch('/api/admin/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('Job created');
+          closeModal();
+          e.target.reset();
+          loadJobs();
+          if (result.job?.homeowner?.email) {
+            showToast('Portal link sent to homeowner');
+          }
+        }
+      } catch { showToast('Failed to create job'); }
+    });
+
+    // ── PORTAL LINK ─────────────────────────
+    function copyPortalLink(token) {
+      const url = `${window.location.origin}/portal/${token}`;
+      navigator.clipboard.writeText(url).then(() => showToast('Link copied'));
+    }
+    function openPortal(token) {
+      window.open(`/portal/${token}`, '_blank');
+    }
+    async function resendLink(jobId) {
+      try {
+        const res = await fetch(`/api/admin/jobs/${jobId}/resend-link`, { method: 'POST' });
+        const data = await res.json();
+        showToast(data.message || 'Link sent');
+      } catch { showToast('Failed to send'); }
+    }
+
+    // ── HELPERS ─────────────────────────────
+    function formatDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Close modal on overlay click
+    document.getElementById('new-job-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // ── BOOT ────────────────────────────────
+    loadJobs();
+  </script>
+</body>
+</html>
