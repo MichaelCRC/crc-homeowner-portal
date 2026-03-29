@@ -132,4 +132,46 @@ router.post('/companycam', (req, res) => {
   res.json({ success: true, matched: true, jobId: job.id });
 });
 
+// POST /webhook/job-sync
+// Receives job creation from supplement portal to create matching record
+router.post('/job-sync', (req, res) => {
+  const { source, address, homeowner, carrier, claimNumber, adjuster, stage, createdAt } = req.body;
+
+  if (!address) {
+    return res.status(400).json({ error: 'Address required' });
+  }
+
+  // Check if job already exists by address
+  const all = jobService.getAllJobs();
+  const existing = all.find(j =>
+    j.address.toLowerCase().replace(/\s+/g, '') === address.toLowerCase().replace(/\s+/g, '')
+  );
+
+  if (existing) {
+    console.log(`[Sync] Job already exists for ${address} (${existing.id})`);
+    return res.json({ success: true, jobId: existing.id, action: 'exists' });
+  }
+
+  // Create new job from sync data
+  const job = jobService.createJob({
+    address,
+    homeownerName: homeowner?.name || '',
+    homeownerEmail: homeowner?.email || '',
+    homeownerPhone: homeowner?.phone || '',
+    carrier: carrier || '',
+    claimNumber: claimNumber || '',
+    adjusterName: adjuster?.name || '',
+    adjusterPhone: adjuster?.phone || '',
+    adjusterEmail: adjuster?.email || ''
+  });
+
+  // Set stage if provided
+  if (stage && stage > 1) {
+    jobService.advanceStage(job.id, stage, `Synced from ${source || 'external'}`);
+  }
+
+  console.log(`[Sync] Created job ${job.id} for ${address} (from ${source})`);
+  res.json({ success: true, jobId: job.id, token: job.token, action: 'created' });
+});
+
 module.exports = router;

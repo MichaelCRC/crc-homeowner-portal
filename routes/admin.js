@@ -40,6 +40,24 @@ router.post('/jobs', adminAuth, async (req, res) => {
     job._emailSent = emailResult.success;
   }
 
+  // Sync to supplement portal — create matching record
+  const supplementUrl = process.env.SUPPLEMENT_PORTAL_URL || 'https://crc-supplements-portal.onrender.com';
+  fetch(`${supplementUrl}/webhook/job-sync`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      source: 'homeowner-portal',
+      jobId: job.id,
+      address: job.address,
+      homeowner: job.homeowner,
+      carrier: job.carrier,
+      claimNumber: job.claimNumber,
+      adjuster: job.adjuster,
+      stage: job.stage,
+      createdAt: job.createdAt
+    })
+  }).catch(err => console.log('[Sync] Supplement portal sync failed:', err.message));
+
   res.json({
     success: true,
     job,
