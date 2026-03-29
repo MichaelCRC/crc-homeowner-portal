@@ -35,105 +35,88 @@
       padding: 16px 24px;
       border-bottom: 2px solid var(--black);
     }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
     .header-logo { height: 44px; }
     .header-title {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
+      font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
     }
 
-    /* LAYOUT */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 24px;
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+    /* STATS ROW — per-stage counts */
+    .stats-row { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat {
+      flex: 1; min-width: 90px; border-left: 3px solid var(--black);
+      padding: 8px 0 8px 14px; cursor: pointer; transition: background 0.15s;
+    }
+    .stat:hover { background: var(--gray-100); }
+    .stat.active { background: var(--gray-100); border-left-color: var(--black); }
+    .stat-value { font-size: 28px; font-weight: 900; line-height: 1; }
+    .stat-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--gray-400); margin-top: 2px;
     }
 
-    /* SECTION HEADERS */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
+    /* TOOLBAR */
+    .toolbar {
+      display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
     }
-    .section-title {
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
+    .search-input {
+      flex: 1; min-width: 200px; padding: 10px 14px;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      border: 2px solid var(--gray-200); background: var(--white); outline: none;
     }
+    .search-input:focus { border-color: var(--black); }
+    .filter-select {
+      padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 12px;
+      font-weight: 700; letter-spacing: 0.5px;
+      border: 2px solid var(--gray-200); background: var(--white); outline: none; cursor: pointer;
+    }
+    .filter-select:focus { border-color: var(--black); }
 
     /* BUTTONS */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 20px;
-      font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      border: 2px solid var(--black);
-      background: var(--black);
-      color: var(--white);
-      transition: all 0.15s;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 20px; font-family: 'Inter', sans-serif; font-size: 11px;
+      font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      border: 2px solid var(--black); background: var(--black); color: var(--white);
+      transition: all 0.15s; white-space: nowrap;
     }
     .btn:hover { background: var(--white); color: var(--black); }
     .btn-sm { padding: 6px 14px; font-size: 10px; }
     .btn-outline { background: var(--white); color: var(--black); }
     .btn-outline:hover { background: var(--black); color: var(--white); }
-    .btn-danger { border-color: var(--red); background: var(--red); }
-    .btn-danger:hover { background: var(--white); color: var(--red); }
+
+    /* SECTION HEADER */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+    .section-actions { display: flex; gap: 8px; }
 
     /* TABLE */
-    .job-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    .job-table { width: 100%; border-collapse: collapse; }
     .job-table th {
-      text-align: left;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--gray-400);
-      padding: 12px 12px;
-      border-bottom: 2px solid var(--black);
+      text-align: left; font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--gray-400); padding: 10px 10px;
+      border-bottom: 2px solid var(--black); cursor: pointer; user-select: none;
     }
+    .job-table th:hover { color: var(--black); }
+    .job-table th .sort-arrow { font-size: 8px; margin-left: 4px; }
     .job-table td {
-      padding: 14px 12px;
-      font-size: 13px;
-      border-bottom: 1px solid var(--gray-200);
-      vertical-align: middle;
+      padding: 12px 10px; font-size: 13px;
+      border-bottom: 1px solid var(--gray-200); vertical-align: middle;
     }
     .job-table tr:hover td { background: var(--gray-100); }
-    .job-table .address {
-      font-weight: 700;
-    }
-    .job-table .meta {
-      font-size: 11px;
-      color: var(--gray-400);
-    }
+    .job-table .address { font-weight: 700; font-size: 13px; }
+    .job-table .meta { font-size: 11px; color: var(--gray-400); }
 
     /* STAGE BADGE */
     .stage-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      background: var(--gray-100);
-      border: 1px solid var(--gray-200);
+      display: inline-block; padding: 3px 8px; font-size: 9px; font-weight: 800;
+      letter-spacing: 0.5px; text-transform: uppercase; background: var(--gray-100);
+      border: 1px solid var(--gray-200); cursor: pointer; position: relative;
     }
     .stage-badge.s1 { border-color: var(--gray-300); }
     .stage-badge.s2 { border-color: var(--black); }
@@ -142,223 +125,116 @@
     .stage-badge.s5 { border-color: var(--green); color: var(--green); }
     .stage-badge.s6 { background: var(--black); color: var(--white); border-color: var(--black); }
 
-    /* ACTIONS */
-    .actions {
-      display: flex;
-      gap: 6px;
+    /* QUICK STAGE DROPDOWN */
+    .stage-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; z-index: 50;
+      background: var(--white); border: 2px solid var(--black); min-width: 180px;
+      margin-top: 4px;
     }
+    .stage-dropdown.show { display: block; }
+    .stage-dropdown-item {
+      padding: 8px 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; cursor: pointer; border: none; background: none;
+      width: 100%; text-align: left; font-family: 'Inter', sans-serif;
+    }
+    .stage-dropdown-item:hover { background: var(--gray-100); }
+    .stage-dropdown-item.active { background: var(--black); color: var(--white); }
+
+    /* ACTIONS */
+    .actions { display: flex; gap: 4px; }
     .action-btn {
-      padding: 4px 10px;
-      font-family: 'Inter', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      border: 1px solid var(--gray-200);
-      background: var(--white);
-      color: var(--black);
+      padding: 4px 8px; font-family: 'Inter', sans-serif; font-size: 9px;
+      font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      cursor: pointer; border: 1px solid var(--gray-200); background: var(--white); color: var(--black);
     }
     .action-btn:hover { border-color: var(--black); }
 
     /* MODAL */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 100;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 40px 16px;
-      overflow-y: auto;
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; justify-content: center; align-items: flex-start;
+      padding: 40px 16px; overflow-y: auto;
     }
     .modal-overlay.show { display: flex; }
-    .modal {
-      background: var(--white);
-      width: 100%;
-      max-width: 640px;
-      padding: 32px;
-    }
+    .modal { background: var(--white); width: 100%; max-width: 640px; padding: 32px; }
     .modal h2 {
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--black);
+      font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--black);
     }
 
     /* FORM */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
     .form-group.full { grid-column: 1 / -1; }
-    @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
     .form-group label {
-      display: block;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--gray-400);
-      margin-bottom: 6px;
+      display: block; font-size: 10px; font-weight: 800; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px;
     }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px 14px;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      border: 2px solid var(--gray-200);
-      background: var(--white);
-      outline: none;
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 14px;
+      border: 2px solid var(--gray-200); background: var(--white); outline: none;
     }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--black);
-    }
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--black); }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
     /* DETAIL PANEL */
-    .detail-panel {
-      display: none;
-      border: 2px solid var(--black);
-      padding: 32px;
-      margin-top: 32px;
-    }
+    .detail-panel { display: none; border: 2px solid var(--black); padding: 32px; margin-top: 32px; }
     .detail-panel.show { display: block; }
     .detail-panel h2 {
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--black);
+      font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--black);
     }
     .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--gray-200);
-      font-size: 13px;
+      display: flex; justify-content: space-between; padding: 10px 0;
+      border-bottom: 1px solid var(--gray-200); font-size: 13px;
     }
     .detail-row:last-child { border-bottom: none; }
     .detail-label {
-      font-weight: 800;
-      font-size: 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--gray-400);
+      font-weight: 800; font-size: 10px; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--gray-400);
     }
     .portal-link {
-      font-family: monospace;
-      font-size: 12px;
-      padding: 8px 12px;
-      background: var(--gray-100);
-      border: 1px solid var(--gray-200);
-      word-break: break-all;
-      margin: 8px 0;
-      display: block;
+      font-family: monospace; font-size: 12px; padding: 8px 12px;
+      background: var(--gray-100); border: 1px solid var(--gray-200);
+      word-break: break-all; margin: 8px 0; display: block;
     }
-
-    /* STAGE CONTROLS */
-    .stage-controls {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
+    .stage-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; }
     .stage-btn {
-      padding: 6px 12px;
-      font-family: 'Inter', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      border: 2px solid var(--gray-200);
-      background: var(--white);
-      color: var(--black);
+      padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 10px;
+      font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      cursor: pointer; border: 2px solid var(--gray-200); background: var(--white); color: var(--black);
     }
     .stage-btn:hover { border-color: var(--black); }
     .stage-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
 
-    /* EMPTY STATE */
-    .empty {
-      text-align: center;
-      padding: 60px 24px;
-      color: var(--gray-400);
-      font-size: 14px;
-    }
+    .empty { text-align: center; padding: 60px 24px; color: var(--gray-400); font-size: 14px; }
 
-    /* TOAST */
     .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--black);
-      color: var(--white);
-      padding: 14px 28px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      z-index: 200;
-      opacity: 0;
-      transition: all 0.3s ease;
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: var(--black); color: var(--white); padding: 14px 28px;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.5px; z-index: 200;
+      opacity: 0; transition: all 0.3s ease;
     }
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* RESULT COUNT */
+    .result-count {
+      font-size: 11px; color: var(--gray-400); font-weight: 600; margin-bottom: 12px;
     }
 
-    /* STATS ROW */
-    .stats-row {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-    }
-    .stat {
-      flex: 1;
-      min-width: 120px;
-      border-left: 3px solid var(--black);
-      padding-left: 16px;
-    }
-    .stat-value {
-      font-size: 32px;
-      font-weight: 900;
-      line-height: 1;
-    }
-    .stat-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--gray-400);
-      margin-top: 4px;
-    }
-
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .header { padding: 12px 16px; }
       .container { padding: 20px 16px; }
       .form-grid { grid-template-columns: 1fr; }
       .modal { padding: 20px; }
-      .stats-row { gap: 16px; }
-      .stat-value { font-size: 24px; }
-      .job-table { font-size: 12px; }
+      .stats-row { gap: 8px; }
+      .stat { min-width: 70px; padding: 6px 0 6px 10px; }
+      .stat-value { font-size: 20px; }
+      .stat-label { font-size: 8px; }
+      .toolbar { flex-direction: column; }
+      .search-input { min-width: unset; }
+      .job-table { font-size: 11px; }
+      .job-table th, .job-table td { padding: 8px 6px; }
+      .section-header { flex-wrap: wrap; gap: 8px; }
     }
   </style>
 </head>
@@ -372,30 +248,59 @@
   </header>
 
   <div class="container">
-    <!-- STATS -->
+    <!-- STATS — per stage counts (clickable filters) -->
     <div class="stats-row" id="stats-row"></div>
 
-    <!-- JOBS LIST -->
-    <div class="section-header">
-      <span class="section-title">All Jobs</span>
-      <button class="btn" onclick="openNewJobModal()">+ New Job</button>
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <input type="text" class="search-input" id="search-input"
+             placeholder="Search by address, name, carrier, or claim #..."
+             oninput="applyFilters()">
+      <select class="filter-select" id="stage-filter" onchange="applyFilters()">
+        <option value="">All Stages</option>
+        <option value="1">Claim Filed</option>
+        <option value="2">Adjuster Scheduled</option>
+        <option value="3">Scope Received</option>
+        <option value="4">Supplement In Review</option>
+        <option value="5">Approved & Scheduled</option>
+        <option value="6">Project Complete</option>
+      </select>
+      <select class="filter-select" id="sort-select" onchange="applyFilters()">
+        <option value="updated-desc">Last Updated</option>
+        <option value="created-desc">Newest First</option>
+        <option value="created-asc">Oldest First</option>
+        <option value="address-asc">Address A-Z</option>
+        <option value="stage-asc">Stage Low-High</option>
+        <option value="stage-desc">Stage High-Low</option>
+      </select>
     </div>
+
+    <!-- SECTION HEADER -->
+    <div class="section-header">
+      <span class="section-title" id="list-title">All Jobs</span>
+      <div class="section-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()">Export CSV</button>
+        <button class="btn" onclick="openNewJobModal()">+ New Job</button>
+      </div>
+    </div>
+
+    <div class="result-count" id="result-count"></div>
 
     <table class="job-table" id="job-table">
       <thead>
         <tr>
-          <th>Property</th>
-          <th>Homeowner</th>
-          <th>Carrier</th>
-          <th>Stage</th>
-          <th>Created</th>
+          <th onclick="sortBy('address')">Property <span class="sort-arrow" id="sort-address"></span></th>
+          <th onclick="sortBy('name')">Homeowner <span class="sort-arrow" id="sort-name"></span></th>
+          <th onclick="sortBy('carrier')">Carrier <span class="sort-arrow" id="sort-carrier"></span></th>
+          <th onclick="sortBy('stage')">Stage <span class="sort-arrow" id="sort-stage"></span></th>
+          <th onclick="sortBy('updated')">Updated <span class="sort-arrow" id="sort-updated"></span></th>
           <th></th>
         </tr>
       </thead>
       <tbody id="job-tbody"></tbody>
     </table>
 
-    <div class="empty" id="empty-state" style="display:none">No jobs yet. Create one to get started.</div>
+    <div class="empty" id="empty-state" style="display:none">No jobs match your filters.</div>
 
     <!-- DETAIL PANEL -->
     <div class="detail-panel" id="detail-panel">
@@ -463,11 +368,14 @@
     </div>
   </div>
 
-  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
   <script>
     let jobs = [];
+    let filteredJobs = [];
+    let activeStageFilter = null;
+    let currentSort = { field: 'updated', dir: 'desc' };
+
     const STAGES = [
       { id: 1, label: 'Claim Filed' },
       { id: 2, label: 'Adjuster Scheduled' },
@@ -482,31 +390,130 @@
       try {
         const res = await fetch('/api/admin/jobs');
         jobs = await res.json();
-        renderJobs();
-      } catch (err) {
-        console.error('Failed to load jobs:', err);
+        applyFilters();
+      } catch (err) { console.error('Failed to load jobs:', err); }
+    }
+
+    // ── FILTER + SORT ───────────────────────
+    function applyFilters() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const stageVal = document.getElementById('stage-filter').value;
+      const sortVal = document.getElementById('sort-select').value;
+
+      // Apply stage from stat click or dropdown
+      const stageFilter = activeStageFilter || (stageVal ? parseInt(stageVal) : null);
+      if (stageVal && !activeStageFilter) {
+        // Sync dropdown selection
       }
+
+      filteredJobs = jobs.filter(j => {
+        // Search
+        if (query) {
+          const searchable = [
+            j.address, j.homeowner?.name, j.homeowner?.email,
+            j.carrier, j.claimNumber
+          ].join(' ').toLowerCase();
+          if (!searchable.includes(query)) return false;
+        }
+        // Stage filter
+        if (stageFilter && j.stage !== stageFilter) return false;
+        return true;
+      });
+
+      // Sort
+      const [field, dir] = sortVal.split('-');
+      filteredJobs.sort((a, b) => {
+        let va, vb;
+        switch (field) {
+          case 'updated': va = a.updatedAt || ''; vb = b.updatedAt || ''; break;
+          case 'created': va = a.createdAt || ''; vb = b.createdAt || ''; break;
+          case 'address': va = (a.address || '').toLowerCase(); vb = (b.address || '').toLowerCase(); break;
+          case 'stage': va = a.stage; vb = b.stage; break;
+          default: va = a.updatedAt || ''; vb = b.updatedAt || '';
+        }
+        if (va < vb) return dir === 'asc' ? -1 : 1;
+        if (va > vb) return dir === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      renderStats();
+      renderJobs();
+    }
+
+    function sortBy(field) {
+      const sortSelect = document.getElementById('sort-select');
+      const current = sortSelect.value;
+      const [curField] = current.split('-');
+      if (curField === field) {
+        // Toggle direction
+        sortSelect.value = current.endsWith('asc') ? `${field}-desc` : `${field}-asc`;
+      } else {
+        sortSelect.value = `${field}-asc`;
+      }
+      applyFilters();
+    }
+
+    function filterByStage(stage) {
+      if (activeStageFilter === stage) {
+        activeStageFilter = null;
+        document.getElementById('stage-filter').value = '';
+      } else {
+        activeStageFilter = stage;
+        document.getElementById('stage-filter').value = String(stage);
+      }
+      applyFilters();
+    }
+
+    // ── RENDER ──────────────────────────────
+    function renderStats() {
+      const counts = {};
+      STAGES.forEach(s => counts[s.id] = 0);
+      jobs.forEach(j => { if (counts[j.stage] !== undefined) counts[j.stage]++; });
+      const total = jobs.length;
+
+      document.getElementById('stats-row').innerHTML =
+        `<div class="stat ${!activeStageFilter ? 'active' : ''}" onclick="filterByStage(null)">
+          <div class="stat-value">${total}</div><div class="stat-label">Total</div>
+        </div>` +
+        STAGES.map(s => `
+          <div class="stat ${activeStageFilter === s.id ? 'active' : ''}" onclick="filterByStage(${s.id})">
+            <div class="stat-value">${counts[s.id]}</div>
+            <div class="stat-label">${s.label}</div>
+          </div>
+        `).join('');
     }
 
     function renderJobs() {
       const tbody = document.getElementById('job-tbody');
       const empty = document.getElementById('empty-state');
+      const countEl = document.getElementById('result-count');
 
-      if (jobs.length === 0) {
+      if (filteredJobs.length === 0) {
         tbody.innerHTML = '';
         empty.style.display = 'block';
-        renderStats();
+        countEl.textContent = jobs.length > 0 ? `0 of ${jobs.length} jobs shown` : '';
         return;
       }
       empty.style.display = 'none';
+      countEl.textContent = filteredJobs.length === jobs.length
+        ? `${jobs.length} jobs`
+        : `${filteredJobs.length} of ${jobs.length} jobs`;
 
-      tbody.innerHTML = jobs.map(j => `
+      tbody.innerHTML = filteredJobs.map(j => `
         <tr>
           <td><span class="address">${j.address || '—'}</span></td>
           <td>${j.homeowner?.name || '—'}<br><span class="meta">${j.homeowner?.email || ''}</span></td>
           <td>${j.carrier || '—'}<br><span class="meta">${j.claimNumber || ''}</span></td>
-          <td><span class="stage-badge s${j.stage}">${j.stageLabel}</span></td>
-          <td class="meta">${formatDate(j.createdAt)}</td>
+          <td style="position:relative">
+            <span class="stage-badge s${j.stage}" onclick="toggleStageDropdown(event, '${j.id}', ${j.stage})">${j.stageLabel}</span>
+            <div class="stage-dropdown" id="sd-${j.id}">
+              ${STAGES.map(s => `
+                <button class="stage-dropdown-item ${s.id === j.stage ? 'active' : ''}"
+                        onclick="quickStage('${j.id}', ${s.id})">${s.id}. ${s.label}</button>
+              `).join('')}
+            </div>
+          </td>
+          <td class="meta">${formatDate(j.updatedAt)}</td>
           <td>
             <div class="actions">
               <button class="action-btn" onclick="viewJob('${j.id}')">View</button>
@@ -515,22 +522,60 @@
           </td>
         </tr>
       `).join('');
-
-      renderStats();
     }
 
-    function renderStats() {
-      const total = jobs.length;
-      const active = jobs.filter(j => j.stage < 6).length;
-      const supplements = jobs.filter(j => j.stage === 4).length;
-      const complete = jobs.filter(j => j.stage === 6).length;
+    // ── QUICK STAGE CHANGE ──────────────────
+    function toggleStageDropdown(e, jobId, currentStage) {
+      e.stopPropagation();
+      // Close all other dropdowns
+      document.querySelectorAll('.stage-dropdown.show').forEach(d => {
+        if (d.id !== `sd-${jobId}`) d.classList.remove('show');
+      });
+      document.getElementById(`sd-${jobId}`).classList.toggle('show');
+    }
 
-      document.getElementById('stats-row').innerHTML = `
-        <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Total Jobs</div></div>
-        <div class="stat"><div class="stat-value">${active}</div><div class="stat-label">Active</div></div>
-        <div class="stat"><div class="stat-value">${supplements}</div><div class="stat-label">In Supplement</div></div>
-        <div class="stat"><div class="stat-value">${complete}</div><div class="stat-label">Complete</div></div>
-      `;
+    async function quickStage(jobId, stage) {
+      document.querySelectorAll('.stage-dropdown.show').forEach(d => d.classList.remove('show'));
+      try {
+        await fetch(`/api/admin/jobs/${jobId}/stage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage, note: 'Quick stage change from admin' })
+        });
+        showToast(`Stage → ${STAGES.find(s => s.id === stage)?.label}`);
+        loadJobs();
+      } catch { showToast('Failed'); }
+    }
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.stage-dropdown.show').forEach(d => d.classList.remove('show'));
+    });
+
+    // ── CSV EXPORT ──────────────────────────
+    function exportCSV() {
+      const headers = ['Address', 'Homeowner', 'Email', 'Phone', 'Carrier', 'Claim #', 'Stage', 'Stage Label', 'Documents', 'Messages', 'Created', 'Updated'];
+      const rows = filteredJobs.map(j => [
+        j.address, j.homeowner?.name, j.homeowner?.email, j.homeowner?.phone,
+        j.carrier, j.claimNumber, j.stage,
+        STAGES.find(s => s.id === j.stage)?.label || '',
+        j.documentsCount || 0, j.messagesCount || 0,
+        j.createdAt, j.updatedAt
+      ]);
+
+      let csv = headers.join(',') + '\n';
+      rows.forEach(row => {
+        csv += row.map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `crc-jobs-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`${filteredJobs.length} jobs exported`);
     }
 
     // ── VIEW JOB ────────────────────────────
@@ -554,6 +599,7 @@
           <div class="detail-row"><span class="detail-label">Documents</span><span>${job.documents?.length || 0}</span></div>
           <div class="detail-row"><span class="detail-label">Messages</span><span>${job.messages?.length || 0}</span></div>
           <div class="detail-row"><span class="detail-label">Created</span><span>${formatDate(job.createdAt)}</span></div>
+          <div class="detail-row"><span class="detail-label">Updated</span><span>${formatDate(job.updatedAt)}</span></div>
 
           <div style="margin-top:20px">
             <span class="detail-label">Portal Link</span>
@@ -577,9 +623,7 @@
         `;
         panel.classList.add('show');
         panel.scrollIntoView({ behavior: 'smooth' });
-      } catch (err) {
-        showToast('Failed to load job');
-      }
+      } catch (err) { showToast('Failed to load job'); }
     }
 
     // ── STAGE UPDATE ────────────────────────
@@ -590,25 +634,20 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ stage, note: 'Manual override from admin' })
         });
-        showToast(`Stage updated`);
+        showToast('Stage updated');
         loadJobs();
         viewJob(jobId);
       } catch { showToast('Failed'); }
     }
 
     // ── CREATE JOB ──────────────────────────
-    function openNewJobModal() {
-      document.getElementById('new-job-modal').classList.add('show');
-    }
-    function closeModal() {
-      document.getElementById('new-job-modal').classList.remove('show');
-    }
+    function openNewJobModal() { document.getElementById('new-job-modal').classList.add('show'); }
+    function closeModal() { document.getElementById('new-job-modal').classList.remove('show'); }
 
     document.getElementById('new-job-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = new FormData(e.target);
       const data = Object.fromEntries(form);
-
       try {
         const res = await fetch('/api/admin/jobs', {
           method: 'POST',
@@ -621,21 +660,17 @@
           closeModal();
           e.target.reset();
           loadJobs();
-          if (result.job?.homeowner?.email) {
-            showToast('Portal link sent to homeowner');
-          }
+          if (result.job?.homeowner?.email) showToast('Portal link sent to homeowner');
         }
       } catch { showToast('Failed to create job'); }
     });
 
-    // ── PORTAL LINK ─────────────────────────
+    // ── HELPERS ─────────────────────────────
     function copyPortalLink(token) {
       const url = `${window.location.origin}/portal/${token}`;
       navigator.clipboard.writeText(url).then(() => showToast('Link copied'));
     }
-    function openPortal(token) {
-      window.open(`/portal/${token}`, '_blank');
-    }
+    function openPortal(token) { window.open(`/portal/${token}`, '_blank'); }
     async function resendLink(jobId) {
       try {
         const res = await fetch(`/api/admin/jobs/${jobId}/resend-link`, { method: 'POST' });
@@ -643,8 +678,6 @@
         showToast(data.message || 'Link sent');
       } catch { showToast('Failed to send'); }
     }
-
-    // ── HELPERS ─────────────────────────────
     function formatDate(iso) {
       if (!iso) return '';
       return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -656,7 +689,6 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    // Close modal on overlay click
     document.getElementById('new-job-modal').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeModal();
     });
