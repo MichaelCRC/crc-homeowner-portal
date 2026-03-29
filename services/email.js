@@ -48,4 +48,55 @@ async function sendPortalLink(job) {
   });
 }
 
-module.exports = { sendEmail, sendHomeownerMessage, sendPortalLink };
+const STAGE_NOTIFICATIONS = {
+  2: {
+    subject: 'Your Adjuster Meeting Has Been Scheduled',
+    message: 'Your insurance adjuster meeting has been scheduled. CRC will be on-site to represent your interests and ensure nothing is missed.'
+  },
+  3: {
+    subject: 'We Received Your Scope of Loss',
+    message: 'We have received your scope of loss and our team is reviewing it now. We will compare it against our inspection findings and reach out if we need anything.'
+  },
+  4: {
+    subject: 'CRC Is Working on Your Supplement',
+    message: 'CRC has identified additional items that should be covered under your claim. We are preparing a supplement request to send to your insurance carrier.'
+  },
+  5: {
+    subject: 'Your Claim Has Been Approved',
+    message: 'Your insurance claim has been approved. CRC is now scheduling your project installation. We will reach out to confirm your preferred dates.'
+  },
+  6: {
+    subject: 'Your Project Is Complete',
+    message: 'Your roofing project is complete. You can view final photos and all documentation in your portal. Thank you for choosing Columbus Roofing Company.'
+  }
+};
+
+async function sendStageNotification(job, newStage) {
+  if (!job.homeowner?.email) return { success: false, reason: 'No email' };
+  const notification = STAGE_NOTIFICATIONS[newStage];
+  if (!notification) return { success: false, reason: 'No notification for this stage' };
+
+  const portalUrl = `${process.env.BASE_URL || 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
+
+  return sendEmail({
+    to: job.homeowner.email,
+    subject: notification.subject,
+    html: `<div style="font-family:'Inter',Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;padding:0;background:#ffffff">
+      <div style="padding:32px 24px 24px;border-bottom:2px solid #111111">
+        <div style="font-size:16px;font-weight:900;letter-spacing:2px;color:#111111">COLUMBUS ROOFING COMPANY</div>
+      </div>
+      <div style="padding:32px 24px">
+        <p style="font-size:15px;color:#111111;margin:0 0 20px;line-height:1.6">${job.homeowner.name},</p>
+        <p style="font-size:15px;color:#333333;margin:0 0 28px;line-height:1.6">${notification.message}</p>
+        <a href="${portalUrl}" style="display:inline-block;padding:14px 32px;background:#111111;color:#ffffff;text-decoration:none;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase">View Your Portal</a>
+      </div>
+      <div style="padding:20px 24px;border-top:1px solid #e5e5e5">
+        <p style="font-size:12px;color:#999999;margin:0">Columbus Roofing Company</p>
+        <p style="font-size:12px;color:#999999;margin:4px 0 0">614-907-4CRC &middot; claims@columbusroofingco.com</p>
+      </div>
+    </div>`,
+    text: `${job.homeowner.name},\n\n${notification.message}\n\nView your portal: ${portalUrl}\n\nColumbus Roofing Company\n614-907-4CRC`
+  });
+}
+
+module.exports = { sendEmail, sendHomeownerMessage, sendPortalLink, sendStageNotification };

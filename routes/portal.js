@@ -116,8 +116,12 @@ router.post('/:token/upload', portalAuth, upload.single('file'), async (req, res
   } catch {}
 
   // Auto-advance stage: if scope doc uploaded and stage is 1 or 2, move to 3
+  // This is system-triggered — fires notification email
   if (doc.type === 'scope' && job.stage < 3) {
     jobService.advanceStage(job.id, 3, 'Scope of loss uploaded by homeowner');
+    const { sendStageNotification } = require('../services/email');
+    const updatedJob = jobService.getJobById(job.id);
+    sendStageNotification(updatedJob, 3).catch(() => {});
   }
 
   res.json({
