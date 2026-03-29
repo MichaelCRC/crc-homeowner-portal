@@ -77,24 +77,59 @@ router.post('/stage-update', async (req, res) => {
 });
 
 // POST /webhook/companycam
-// CompanyCam photo webhook — auto-link photos to jobs
+// CompanyCam webhook — stores photos directly to job record.
+// NO API KEY. Webhook is the only data source.
 router.post('/companycam', (req, res) => {
-  const { project, photo } = req.body;
-  if (!project) return res.status(400).json({ error: 'No project data' });
+  const { project, photo, photos: photoBatch } = req.body;
+  if (!project && !photo) return res.status(400).json({ error: 'No project or photo data' });
 
+  const { normalizePhoto } = require('../services/companycam');
   const all = jobService.getAllJobs();
-  const projectName = project.name || '';
+  const projectName = project?.name || '';
+  const projectId = project?.id ? String(project.id) : '';
+
+  // Match job by companycamProjectId or address
   const job = all.find(j =>
-    j.companycamProjectId === String(project.id) ||
-    (j.address && projectName.toLowerCase().includes(j.address.toLowerCase().split(',')[0]))
+    (projectId && j.companycamProjectId === projectId) ||
+    (j.address && projectName.toLowerCase().includes(j.address.toLowerCase().split(',')[0].trim()))
   );
 
-  if (job) {
-    console.log(`[Webhook] companycam: photo linked to job ${job.id}`);
-    // Photos are fetched live from CompanyCam API, no storage needed
+  if (!job) {
+    console.log(`[Webhook] companycam: no matching job for project "${projectName}" (${projectId})`);
+    return res.json({ success: true, matched: false });
   }
 
-  res.json({ success: true });
+  // Store companycam project ID if not already set
+  if (projectId && !job.companycamProjectId) {
+    jobService.updateJob(job.id, { companycamProjectId: projectId });
+  }
+
+  // Process incoming photo(s)
+  const incoming = [];
+  if (photo) incoming.push(photo);
+  if (photoBatch && Array.isArray(photoBatch)) incoming.push(...photoBatch);
+
+  if (incoming.length > 0) {
+    const currentPhotos = job.photos || [];
+    const existingIds = new Set(currentPhotos.map(p => p.id));
+    let added = 0;
+
+    for (const raw of incoming) {
+      const normalized = normalizePhoto(raw);
+      if (!existingIds.has(normalized.id) && normalized.url) {
+        currentPhotos.push(normalized);
+        existingIds.add(normalized.id);
+        added++;
+      }
+    }
+
+    if (added > 0) {
+      jobService.updateJob(job.id, { photos: currentPhotos });
+      console.log(`[Webhook] companycam: ${added} photo(s) added to job ${job.id} (${job.address})`);
+    }
+  }
+
+  res.json({ success: true, matched: true, jobId: job.id });
 });
 
 module.exports = router;

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { portalAuth } = require('../middleware/auth');
 const jobService = require('../services/jobs');
-const companycam = require('../services/companycam');
 const email = require('../services/email');
 const multer = require('multer');
 const path = require('path');
@@ -51,38 +50,11 @@ router.get('/:token', portalAuth, (req, res) => {
   });
 });
 
-// GET /api/portal/:token/photos — pull from CompanyCam
-router.get('/:token/photos', portalAuth, async (req, res) => {
-  const job = req.job;
-  let projectId = job.companycamProjectId;
-
-  // Auto-detect project by address if no ID stored
-  if (!projectId && job.address) {
-    const project = await companycam.searchProjectByAddress(job.address);
-    if (project) {
-      projectId = project.id;
-      jobService.updateJob(job.id, { companycamProjectId: project.id });
-    }
-  }
-
-  if (!projectId) {
-    return res.json({ photos: [], message: 'No photos available yet' });
-  }
-
-  const photos = await companycam.fetchPhotos(projectId);
-
-  // Categorize: inspection vs post-install based on tags
-  const inspection = [];
-  const postInstall = [];
-  photos.forEach(p => {
-    const tags = p.tags.map(t => t.toLowerCase());
-    if (tags.some(t => t.includes('install') || t.includes('complete') || t.includes('after'))) {
-      postInstall.push(p);
-    } else {
-      inspection.push(p);
-    }
-  });
-
+// GET /api/portal/:token/photos — read from job record (webhook-stored)
+// CompanyCam is WEBHOOK ONLY — no API key.
+router.get('/:token/photos', portalAuth, (req, res) => {
+  const { getPhotosFromJob } = require('../services/companycam');
+  const { inspection, postInstall } = getPhotosFromJob(req.job);
   res.json({ inspection, postInstall });
 });
 

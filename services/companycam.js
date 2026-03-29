@@ -1,44 +1,37 @@
-const CC_API_BASE = 'https://api.companycam.com/v2';
+/**
+ * CompanyCam — WEBHOOK ONLY. No API key exists.
+ * Photos arrive via POST /webhook/companycam and are stored in job.photos[].
+ * This module provides helpers for photo storage and retrieval from job records.
+ */
 
-async function fetchPhotos(projectId) {
-  const token = process.env.COMPANYCAM_API_KEY;
-  if (!token || !projectId) return [];
+function categorizePhoto(photo) {
+  const tags = (photo.tags || []).map(t => (t.display_value || t.value || t || '').toLowerCase());
+  const caption = (photo.caption || photo.photo_note || '').toLowerCase();
 
-  try {
-    const res = await fetch(`${CC_API_BASE}/projects/${projectId}/photos?per_page=100`, {
-      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-    });
-    if (!res.ok) return [];
-    const photos = await res.json();
-    return photos.map(p => ({
-      id: p.id,
-      url: p.uris?.[0]?.uri || p.photo_url || '',
-      thumb: p.uris?.find(u => u.type === 'thumb')?.uri || p.uris?.[0]?.uri || '',
-      caption: p.photo_note || '',
-      takenAt: p.captured_at || p.created_at || '',
-      tags: (p.tags || []).map(t => t.display_value || t.value || '')
-    }));
-  } catch (err) {
-    console.error('CompanyCam fetch error:', err.message);
-    return [];
-  }
+  const isPostInstall = tags.some(t =>
+    t.includes('install') || t.includes('complete') || t.includes('after') || t.includes('final')
+  ) || caption.includes('install') || caption.includes('complete') || caption.includes('after');
+
+  return isPostInstall ? 'postInstall' : 'inspection';
 }
 
-async function searchProjectByAddress(address) {
-  const token = process.env.COMPANYCAM_API_KEY;
-  if (!token || !address) return null;
-
-  try {
-    const res = await fetch(`${CC_API_BASE}/projects?search=${encodeURIComponent(address)}&per_page=5`, {
-      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-    });
-    if (!res.ok) return null;
-    const projects = await res.json();
-    return projects.length > 0 ? projects[0] : null;
-  } catch (err) {
-    console.error('CompanyCam search error:', err.message);
-    return null;
-  }
+function normalizePhoto(rawPhoto) {
+  return {
+    id: rawPhoto.id || String(Date.now()),
+    url: rawPhoto.uris?.[0]?.uri || rawPhoto.photo_url || rawPhoto.url || '',
+    thumb: rawPhoto.uris?.find(u => u.type === 'thumb')?.uri || rawPhoto.uris?.[0]?.uri || rawPhoto.photo_url || rawPhoto.thumb || rawPhoto.url || '',
+    caption: rawPhoto.photo_note || rawPhoto.caption || '',
+    takenAt: rawPhoto.captured_at || rawPhoto.created_at || rawPhoto.takenAt || new Date().toISOString(),
+    tags: (rawPhoto.tags || []).map(t => t.display_value || t.value || t || ''),
+    category: categorizePhoto(rawPhoto)
+  };
 }
 
-module.exports = { fetchPhotos, searchProjectByAddress };
+function getPhotosFromJob(job) {
+  const photos = job.photos || [];
+  const inspection = photos.filter(p => p.category !== 'postInstall');
+  const postInstall = photos.filter(p => p.category === 'postInstall');
+  return { inspection, postInstall };
+}
+
+module.exports = { categorizePhoto, normalizePhoto, getPhotosFromJob };
