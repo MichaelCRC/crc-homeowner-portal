@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: crc-homeowner-portal
+    runtime: node
+    repo: https://github.com/MichaelCRC/crc-homeowner-portal
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    region: oregon
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: COMPANYCAM_API_KEY
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: PORTAL_SECRET
+        generateValue: true
+      - key: BASE_URL
+        value: https://crc-homeowner-portal.onrender.com
