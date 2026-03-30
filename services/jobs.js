@@ -48,7 +48,7 @@ function createJob(data) {
     token: generateToken(),
     address: data.address || '',
     homeowner: {
-      name: data.homeownerName || '',
+      name: data.homeownerName || 'Homeowner',
       email: data.homeownerEmail || '',
       phone: data.homeownerPhone || ''
     },
