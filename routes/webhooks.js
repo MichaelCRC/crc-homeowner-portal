@@ -3,6 +3,8 @@ const router = express.Router();
 const jobService = require('../services/jobs');
 const { sendStageNotification } = require('../services/email');
 const { compareScopes } = require('../services/scope-comparison');
+const { generateSupplementPDF } = require('../services/supplement-document');
+const { buildSupplementEmailDraft } = require('../services/supplement-email');
 
 // POST /webhook/supplement-portal
 // Receives scope analysis results from the supplement portal
@@ -32,7 +34,7 @@ router.post('/supplement-portal', async (req, res) => {
 
   // Store any supplemental data and run scope comparison if both scopes present
   if (data) {
-    const updates = { supplementData: data };
+    let updates = { supplementData: data };
 
     // Calculate estimated supplement opportunity when both scopes are available
     if (data.crcLineItems && data.carrierLineItems) {
@@ -40,12 +42,29 @@ router.post('/supplement-portal', async (req, res) => {
         const comparison = compareScopes(data.crcLineItems, data.carrierLineItems);
         updates.scopeComparison = comparison;
         console.log(`[Webhook] supplement-portal: scope comparison for job ${job.id} — ${comparison.totalGapItems} gap items, estimated supplement value $${comparison.estimatedSupplementValue}`);
+
+        // Generate supplement PDF and prepare email draft if gap items exist
+        if (comparison.totalGapItems > 0) {
+          jobService.updateJob(job.id, updates);
+          generateSupplementPDF(job.id, comparison).then(pdfInfo => {
+            if (pdfInfo) {
+              buildSupplementEmailDraft(job.id, comparison, pdfInfo);
+              console.log(`[Webhook] supplement-portal: supplement PDF + email draft ready for job ${job.id}`);
+            }
+          }).catch(err => {
+            console.log(`[Webhook] supplement-portal: PDF generation failed for job ${job.id}:`, err.message);
+          });
+          // updates already saved above, skip the save below
+          updates = null;
+        }
       } catch (err) {
         console.log(`[Webhook] supplement-portal: scope comparison failed for job ${job.id}:`, err.message);
       }
     }
 
-    jobService.updateJob(job.id, updates);
+    if (updates) {
+      jobService.updateJob(job.id, updates);
+    }
   }
 
   // Fire notification email on stage change (system-triggered)
