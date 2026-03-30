@@ -678,6 +678,8 @@
           e.target.reset();
           loadJobs();
           if (result.job?.homeowner?.email) showToast('Portal link sent to homeowner');
+        } else {
+          showToast(result.error || 'Job creation failed');
         }
       } catch (err) { showToast('Job creation failed — check server connection'); }
     });
