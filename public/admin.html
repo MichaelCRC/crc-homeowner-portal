@@ -310,6 +310,15 @@
 
     <div class="empty" id="empty-state" style="display:none">No jobs match your filters.</div>
 
+    <!-- STORM APPROACH BRIEF (mobile auto-detect) -->
+    <div id="storm-approach-card" style="display:none; background:#111; color:#fff; padding:24px; margin-top:24px; border-left:4px solid #1A7A1A">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A7A1A" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+        <span style="font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#1A7A1A">You are at the job site</span>
+      </div>
+      <div id="storm-brief-content" style="font-size:14px; line-height:1.7"></div>
+    </div>
+
     <!-- DETAIL PANEL -->
     <div class="detail-panel" id="detail-panel">
       <h2 id="detail-title">Job Detail</h2>
@@ -327,7 +336,13 @@
         <div class="form-grid">
           <div class="form-group full">
             <label>Property Address *</label>
-            <input type="text" name="address" required placeholder="123 Main St, Columbus, OH 43215">
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <input type="text" name="address" required placeholder="123 Main St, Columbus, OH 43215" style="flex:1">
+              <button type="button" class="btn btn-outline btn-sm" id="gps-btn" onclick="useMyLocation()" style="white-space:nowrap;margin-top:2px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:4px;vertical-align:middle"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+                Use My Location
+              </button>
+            </div>
           </div>
           <div class="form-group">
             <label>Homeowner Name</label>
@@ -640,6 +655,9 @@
         `;
         panel.classList.add('show');
         panel.scrollIntoView({ behavior: 'smooth' });
+
+        // Auto-detect GPS proximity for storm approach brief (mobile)
+        checkStormApproach(job.id);
       } catch (err) { showToast('Failed to load job'); }
     }
 
@@ -711,6 +729,110 @@
     document.getElementById('new-job-modal').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeModal();
     });
+
+    // ── GPS STORM APPROACH (auto-detect) ─────
+    let stormCheckJobId = null;
+
+    function checkStormApproach(jobId) {
+      if (!navigator.geolocation) return;
+      stormCheckJobId = jobId;
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          if (stormCheckJobId !== jobId) return; // user navigated away
+          try {
+            const res = await fetch(`/api/admin/jobs/${jobId}/storm-approach`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+            });
+            const data = await res.json();
+            const card = document.getElementById('storm-approach-card');
+
+            if (data.atJobSite && data.stormBrief?.available) {
+              const brief = data.stormBrief;
+              let html = '';
+
+              if (brief.approachGuidance) {
+                html += `<div style="font-size:18px; font-weight:800; margin-bottom:8px">${brief.approachGuidance}</div>`;
+              }
+
+              if (brief.hailSize) {
+                html += `<div style="margin-bottom:4px">Hail: <strong>${brief.hailSize}</strong></div>`;
+              }
+              if (brief.eventType && brief.eventDate) {
+                html += `<div style="margin-bottom:4px">Event: <strong>${brief.eventType}</strong> on ${brief.eventDate}</div>`;
+              }
+
+              if (brief.fieldNotes?.length) {
+                html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #333">';
+                brief.fieldNotes.forEach(note => {
+                  html += `<div style="font-size:13px; color:#ccc; margin-bottom:6px">• ${note}</div>`;
+                });
+                html += '</div>';
+              }
+
+              document.getElementById('storm-brief-content').innerHTML = html;
+              card.style.display = 'block';
+              card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+              card.style.display = 'none';
+            }
+          } catch {
+            // Silently fail — GPS storm approach is a convenience feature
+          }
+        },
+        () => { /* permission denied or unavailable — silently skip */ },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    // ── GPS ADDRESS AUTO-FILL ────────────────
+    async function useMyLocation() {
+      const btn = document.getElementById('gps-btn');
+      const addressInput = document.querySelector('input[name="address"]');
+
+      if (!navigator.geolocation) {
+        showToast('GPS not available on this device');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span style="font-size:10px">Locating…</span>';
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const res = await fetch('/api/admin/geocode', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+            });
+            const data = await res.json();
+            if (data.success && data.address) {
+              addressInput.value = data.address;
+              addressInput.focus();
+              showToast('Address filled from GPS — confirm and tap Create');
+            } else {
+              showToast(data.reason || 'Could not resolve address');
+            }
+          } catch {
+            showToast('Geocode request failed');
+          }
+          resetGpsBtn();
+        },
+        (err) => {
+          showToast(err.code === 1 ? 'Location permission denied' : 'Could not get GPS location');
+          resetGpsBtn();
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+
+      function resetGpsBtn() {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:4px;vertical-align:middle"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg> Use My Location';
+      }
+    }
 
     // ── BOOT ────────────────────────────────
     loadJobs();

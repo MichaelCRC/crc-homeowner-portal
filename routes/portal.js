@@ -123,4 +123,52 @@ router.post('/:token/message', portalAuth, async (req, res) => {
   res.json({ success: true, message: 'Message sent to CRC' });
 });
 
+// GET /api/portal/:token/design — Hover visualization data for Design tab
+router.get('/:token/design', portalAuth, async (req, res) => {
+  const { findHoverJob, getVisualizationEmbed } = require('../services/hover');
+  const job = req.job;
+
+  // Check if we have a cached Hover ID from supplement portal sync
+  const hoverId = job.supplementData?.measurements?.hoverId || null;
+
+  if (hoverId) {
+    const embed = await getVisualizationEmbed(hoverId);
+    return res.json({ available: true, hoverId, ...embed });
+  }
+
+  // Search Hover by address
+  const hoverResult = await findHoverJob(job.address);
+  if (!hoverResult.success) {
+    return res.json({ available: false, reason: hoverResult.reason });
+  }
+
+  const embed = await getVisualizationEmbed(hoverResult.hoverId);
+  res.json({
+    available: true,
+    hoverId: hoverResult.hoverId,
+    ...embed
+  });
+});
+
+// GET /api/portal/:token/home-value — property value + roof ROI projection
+router.get('/:token/home-value', portalAuth, async (req, res) => {
+  const { getHomeValue, calculateRoofROI } = require('../services/home-value');
+  const job = req.job;
+
+  const valueResult = await getHomeValue(job.address);
+  if (!valueResult.success) {
+    return res.json({ available: false, reason: valueResult.reason });
+  }
+
+  // Use supplement estimated value or a reasonable default for ROI calc
+  const projectCost = job.scopeComparison?.estimatedSupplementValue || 12000;
+  const roi = calculateRoofROI(valueResult.currentValue, projectCost);
+
+  res.json({
+    available: true,
+    source: valueResult.source,
+    ...roi
+  });
+});
+
 module.exports = router;

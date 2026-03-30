@@ -3,6 +3,10 @@ const router = express.Router();
 const { adminAuth } = require('../middleware/auth');
 const jobService = require('../services/jobs');
 const emailService = require('../services/email');
+const { sendSupplementEmail } = require('../services/supplement-email');
+const { sendWelcomeWithVCard } = require('../services/sms');
+const { reverseGeocode } = require('../services/geocode');
+const { checkProximityAndBrief } = require('../services/storm-approach');
 
 // GET /api/admin/jobs — list all jobs
 router.get('/jobs', adminAuth, (req, res) => {
@@ -38,6 +42,13 @@ router.post('/jobs', adminAuth, async (req, res) => {
   if (job.homeowner.email) {
     const emailResult = await emailService.sendPortalLink(job);
     job._emailSent = emailResult.success;
+  }
+
+  // Send SMS welcome + vCard contact card if phone provided
+  if (job.homeowner.phone) {
+    sendWelcomeWithVCard(job).then(r => {
+      console.log(`[SMS] Welcome + vCard for ${job.address}: ${r.success ? 'sent' : r.reason}`);
+    }).catch(() => {});
   }
 
   // Sync to supplement portal — create matching record
@@ -112,6 +123,62 @@ router.post('/jobs/:id/resend-link', adminAuth, async (req, res) => {
 
   const result = await emailService.sendPortalLink(job);
   res.json({ success: result.success, message: result.success ? 'Link sent' : result.reason });
+});
+
+// GET /api/admin/jobs/:id/supplement-draft — preview supplement email draft
+router.get('/jobs/:id/supplement-draft', adminAuth, (req, res) => {
+  const job = jobService.getJobById(req.params.id);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+  if (!job.supplementEmailDraft) return res.status(404).json({ error: 'No supplement draft — scope comparison has not run yet' });
+
+  const draft = job.supplementEmailDraft;
+  res.json({
+    to: draft.to,
+    from: draft.from,
+    subject: draft.subject,
+    htmlBody: draft.htmlBody,
+    textBody: draft.textBody,
+    attachment: draft.attachment ? { filename: draft.attachment.filename, documentId: draft.attachment.documentId } : null,
+    estimatedValue: draft.estimatedValue,
+    totalGapItems: draft.totalGapItems,
+    sentAt: draft.sentAt || null,
+    createdAt: draft.createdAt
+  });
+});
+
+// POST /api/admin/jobs/:id/send-supplement — one-click send supplement email
+router.post('/jobs/:id/send-supplement', adminAuth, async (req, res) => {
+  try {
+    const result = await sendSupplementEmail(req.params.id);
+    if (result.success) {
+      res.json({ success: true, message: 'Supplement email sent to adjuster' });
+    } else {
+      res.json({ success: false, reason: result.reason });
+    }
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/jobs/:id/storm-approach — GPS proximity check + storm brief
+router.post('/jobs/:id/storm-approach', adminAuth, async (req, res) => {
+  const { lat, lng } = req.body;
+  if (!lat || !lng) return res.status(400).json({ error: 'lat and lng required' });
+
+  const job = jobService.getJobById(req.params.id);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  const result = await checkProximityAndBrief(job, lat, lng);
+  res.json(result);
+});
+
+// POST /api/admin/geocode — reverse geocode GPS coordinates to address
+router.post('/geocode', adminAuth, async (req, res) => {
+  const { lat, lng } = req.body;
+  if (!lat || !lng) return res.status(400).json({ error: 'lat and lng required' });
+
+  const result = await reverseGeocode(lat, lng);
+  res.json(result);
 });
 
 module.exports = router;

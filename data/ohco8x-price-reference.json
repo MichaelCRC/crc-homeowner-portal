@@ -1,0 +1,27 @@
+{
+  "priceList": "OHCO8X",
+  "effectiveDate": "2026-03-01",
+  "sourceEstimateDate": "2026-03-24",
+  "region": "OH",
+  "note": "INTERNAL REFERENCE ONLY — for carrier scope gap analysis and supplement opportunity calculations. Never display prices in scope output.",
+  "prices": {
+    "RFG REMOV": { "unit": "SQ", "price": 187.26 },
+    "RFG SHNGL": { "unit": "SQ", "price": 299.23 },
+    "RFG FELT": { "unit": "SQ", "price": 43.51 },
+    "RFG ICWTR": { "unit": "SF", "price": 2.06 },
+    "RFG DRPEDG": { "unit": "LF", "price": 3.73 },
+    "RFG START": { "unit": "LF", "price": 2.29 },
+    "RFG RIDGE": { "unit": "LF", "price": 7.15 },
+    "RFG STPFL": { "unit": "LF", "price": 13.12 },
+    "RFG PIPJK": { "unit": "EA", "price": 61.82 },
+    "RFG RDGVNT": { "unit": "LF", "price": 11.71 },
+    "RFG TARP": { "unit": "SF", "price": 1.77 },
+    "GTR RR": { "unit": "LF", "price": 6.74 },
+    "FLL": { "unit": "LF", "price": 8.90 },
+    "FLCH>": { "unit": "EA", "price": 559.97 },
+    "STEEP>": { "unit": "SQ", "price": 115.16 },
+    "STEEP> REMOV": { "unit": "SQ", "price": 98.21 },
+    "HIGH ROOF": { "unit": "SQ", "price": 26.67 },
+    "HIGH ROOF REMOV": { "unit": "SQ", "price": 19.82 }
+  }
+}
