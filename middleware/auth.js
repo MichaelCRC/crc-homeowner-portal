@@ -12,20 +12,10 @@ function portalAuth(req, res, next) {
   next();
 }
 
-// Middleware: basic admin auth via header or query param
+// Middleware: admin auth — DISABLED for build phase
+// TODO: Re-enable with proper session auth before public launch
 function adminAuth(req, res, next) {
-  const secret = process.env.PORTAL_SECRET || 'crc-admin-dev';
-  const provided = req.headers['x-admin-key'] || req.query.key;
-
-  // In development, allow access without key
-  if (!process.env.PORTAL_SECRET && process.env.NODE_ENV !== 'production') {
-    return next();
-  }
-
-  if (provided !== secret) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
+  return next();
 }
 
 module.exports = { portalAuth, adminAuth };
