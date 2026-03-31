@@ -541,6 +541,7 @@
     <!-- TABS -->
     <nav class="tabs">
       <div class="tab active" data-tab="overview">Overview</div>
+      <div class="tab" data-tab="yourclaim">Your Claim</div>
       <div class="tab" data-tab="documents">Documents</div>
       <div class="tab" data-tab="design">Design</div>
       <div class="tab" data-tab="photos">Photos</div>
@@ -601,6 +602,13 @@
           <p><a href="tel:6149074272">614-907-4CRC</a></p>
           <p><a href="mailto:claims@columbusroofingco.com">claims@columbusroofingco.com</a></p>
           <p style="margin-top:8px; font-size:12px; color:var(--gray-400)">Columbus Roofing Company — Columbus, OH</p>
+        </div>
+      </div>
+
+      <!-- YOUR CLAIM -->
+      <div id="panel-yourclaim" class="tab-panel">
+        <div id="claim-guide-content" style="font-size:14px;line-height:1.7;color:#1E293B">
+          <p style="color:#64748B">Loading your claim guide...</p>
         </div>
       </div>
 
@@ -767,6 +775,61 @@
       document.getElementById('info-adjuster').textContent = jobData.adjuster?.name || '—';
     }
 
+    async function loadClaimGuide() {
+      const el = document.getElementById('claim-guide-content');
+      try {
+        const res = await fetch(`/api/portal/${token}/claim-guide`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        let html = '';
+        // Current stage highlight
+        const currentStage = jobData.stage || 1;
+        const stageNames = ['Inspection', 'Scope & Estimate', 'Insurance Review', 'Supplement', 'Approval', 'Completion'];
+        html += '<div style="margin-bottom:24px"><h3 style="font-size:16px;color:#1B2360;margin-bottom:12px">Where You Are in the Process</h3>';
+        html += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+        stageNames.forEach((s, i) => {
+          const active = i + 1 === currentStage;
+          const done = i + 1 < currentStage;
+          html += `<div style="padding:8px 14px;border-radius:6px;font-size:12px;font-weight:${active?700:400};background:${active?'#00B5CC':done?'#D1FAE5':'#F1F5F9'};color:${active?'#fff':done?'#065F46':'#64748B'}">${s}</div>`;
+        });
+        html += '</div></div>';
+
+        // Universal process
+        if (data.universalProcess) {
+          html += `<div style="margin-bottom:24px">${formatGuideSection(data.universalProcess)}</div>`;
+        }
+
+        // Carrier-specific section
+        if (data.carrierGuide) {
+          html += `<div style="margin-bottom:24px;padding:16px;border:1px solid #E2E8F0;border-radius:8px">`;
+          html += `<h3 style="font-size:16px;color:#1B2360;margin-bottom:12px">Your ${jobData.carrier || ''} Claim</h3>`;
+          html += formatGuideSection(data.carrierGuide);
+          html += '</div>';
+        }
+
+        // Ohio rights
+        if (data.ohioRights) {
+          html += `<div style="padding:16px;background:#F8FAFC;border-radius:8px">${formatGuideSection(data.ohioRights)}</div>`;
+        }
+
+        el.innerHTML = html;
+      } catch (e) {
+        el.innerHTML = '<p style="color:#64748B">Claim guide is being prepared. Check back soon.</p>';
+      }
+    }
+
+    function formatGuideSection(md) {
+      return md
+        .replace(/^### (.+)$/gm, '<h4 style="font-size:14px;font-weight:700;color:#1B2360;margin:16px 0 8px">$1</h4>')
+        .replace(/^## (.+)$/gm, '<h3 style="font-size:16px;font-weight:700;color:#1B2360;margin:20px 0 10px">$1</h3>')
+        .replace(/^\d+\. (.+)$/gm, '<div style="padding:4px 0 4px 16px">$1</div>')
+        .replace(/^- (.+)$/gm, '<div style="padding:2px 0 2px 16px;color:#475569">$1</div>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+    }
+
     function renderDocuments() {
       const list = document.getElementById('doc-list');
       const noDocs = document.getElementById('no-docs');
@@ -859,6 +922,7 @@
         tab.classList.add('active');
         document.getElementById(`panel-${tab.dataset.tab}`).classList.add('active');
 
+        if (tab.dataset.tab === 'yourclaim') loadClaimGuide();
         if (tab.dataset.tab === 'design') loadDesign();
         if (tab.dataset.tab === 'photos') loadPhotos();
       });

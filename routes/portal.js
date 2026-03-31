@@ -171,4 +171,44 @@ router.get('/:token/home-value', portalAuth, async (req, res) => {
   });
 });
 
+// --- Claim Guide ---
+router.get('/:token/claim-guide', portalAuth, (req, res) => {
+  const fs = require('fs');
+  const guidePath = path.join(__dirname, '..', 'data', 'knowledge', 'carrier-guides');
+  const masterPath = path.join(__dirname, '..', 'data', 'knowledge', 'crc-homeowner-carrier-guide.md');
+  const carrier = (req.job.carrier || '').toLowerCase().trim();
+
+  // Map carrier names to file names
+  const carrierFileMap = {
+    'state farm': 'state-farm-guide.md',
+    'allstate': 'allstate-guide.md',
+    'erie': 'erie-guide.md', 'erie insurance': 'erie-guide.md',
+    'nationwide': 'nationwide-guide.md',
+    'grange': 'grange-guide.md', 'grange mutual': 'grange-guide.md', 'grange insurance': 'grange-guide.md',
+    'american family': 'american-family-guide.md', 'amfam': 'american-family-guide.md',
+    'liberty mutual': 'liberty-safeco-guide.md', 'safeco': 'liberty-safeco-guide.md', 'liberty': 'liberty-safeco-guide.md',
+    'westfield': 'westfield-guide.md',
+    'usaa': 'usaa-guide.md',
+  };
+
+  let carrierGuide = '';
+  const fileName = carrierFileMap[carrier];
+  if (fileName) {
+    try { carrierGuide = fs.readFileSync(path.join(guidePath, fileName), 'utf-8'); } catch {}
+  }
+
+  // Universal process section
+  let universalProcess = '';
+  let ohioRights = '';
+  try {
+    const master = fs.readFileSync(masterPath, 'utf-8');
+    const uniMatch = master.match(/## UNIVERSAL CLAIM PROCESS[\s\S]*?(?=\n## [A-Z])/);
+    if (uniMatch) universalProcess = uniMatch[0];
+    const ohioMatch = master.match(/## OHIO HOMEOWNER RIGHTS[\s\S]*$/);
+    if (ohioMatch) ohioRights = ohioMatch[0];
+  } catch {}
+
+  res.json({ universalProcess, carrierGuide, ohioRights });
+});
+
 module.exports = router;
