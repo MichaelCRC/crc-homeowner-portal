@@ -64,7 +64,7 @@ function generateSupplementPDF(jobId, comparison) {
 
   // --- HEADER ---
   doc.fontSize(10).font('Helvetica-Bold').text('COLUMBUS ROOFING COMPANY', 50, 50);
-  doc.fontSize(8).font('Helvetica').text('614-907-4CRC  |  claims@columbusroofingco.com', 50, 64);
+  doc.fontSize(8).font('Helvetica').text('(614) 743-1481  |  claims@columbusroofingco.com', 50, 64);
   doc.moveTo(50, 82).lineTo(50 + pageWidth, 82).lineWidth(2).stroke('#111111');
 
   // --- TITLE ---
@@ -121,7 +121,7 @@ function generateSupplementPDF(jobId, comparison) {
 
   // --- FOOTER ---
   doc.fontSize(8).font('Helvetica').fillColor('#999999');
-  doc.text('Columbus Roofing Company  |  614-907-4CRC  |  claims@columbusroofingco.com', 50, doc.page.height - 50, { align: 'center' });
+  doc.text('Columbus Roofing Company  |  (614) 743-1481  |  claims@columbusroofingco.com', 50, doc.page.height - 50, { align: 'center' });
 
   doc.end();
 

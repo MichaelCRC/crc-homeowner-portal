@@ -29,4 +29,4 @@ Supplement process: 2-4 weeks (may require agent involvement)
 - Ohio matching law is the primary tool for expanding narrow Grange scopes
 - If your shingles are discontinued, Grange must approve full replacement under Ohio law
 
-Columbus Roofing Company | claims@columbusroofingco.com | 614-245-5213
+Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481

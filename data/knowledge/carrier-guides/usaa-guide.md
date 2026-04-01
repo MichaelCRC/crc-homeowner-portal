@@ -27,4 +27,4 @@ Supplement response: 1-2 weeks (typically fast)
 - RCV coverage is standard -- your full repair cost is covered minus deductible
 - Alacrity adjusters are typically more flexible than staff adjusters at other carriers
 
-Columbus Roofing Company | claims@columbusroofingco.com | 614-245-5213
+Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481

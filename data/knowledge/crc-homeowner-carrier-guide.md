@@ -334,4 +334,4 @@ Columbus Roofing Company is a GAF Master Elite contractor. We handle every aspec
 
 If you have questions about your claim at any time, contact us:
 - claims@columbusroofingco.com
-- 614-245-5213
+- (614) 743-1481

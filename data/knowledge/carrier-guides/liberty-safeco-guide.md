@@ -26,4 +26,4 @@ Supplement response: 2-3 weeks
 - Check if you have enhanced dwelling replacement coverage -- this is equivalent to guaranteed replacement cost
 - CRC handles all coordination between you and the adjusting team
 
-Columbus Roofing Company | claims@columbusroofingco.com | 614-245-5213
+Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481

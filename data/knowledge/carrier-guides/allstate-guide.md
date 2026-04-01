@@ -31,4 +31,4 @@ Supplement/re-inspection: 2-4 weeks
 - If your policy is RCV, depreciation is paid back to you after work is complete
 - CRC handles all communication with Allstate on your behalf
 
-Columbus Roofing Company | claims@columbusroofingco.com | 614-245-5213
+Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481

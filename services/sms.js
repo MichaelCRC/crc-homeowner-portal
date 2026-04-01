@@ -11,7 +11,7 @@ const VCARD = [
   'N:;Columbus Roofing Company;;;',
   'FN:Columbus Roofing Company',
   'ORG:Columbus Roofing Company',
-  'TEL;TYPE=WORK,VOICE:+16149074272',
+  'TEL;TYPE=WORK,VOICE:+16147431481',
   'EMAIL;TYPE=WORK:claims@columbusroofingco.com',
   'URL:https://columbusroofingco.com',
   'ADR;TYPE=WORK:;;Columbus;OH;;;US',
@@ -97,7 +97,7 @@ async function sendWelcomeWithVCard(job) {
   // Send welcome SMS
   const smsResult = await sendSMS({
     to: phone,
-    body: `${name ? name + ', t' : 'T'}his is Columbus Roofing Company. Your project portal is ready: ${portalUrl}\n\nYou can check your claim status, upload documents, and message our team anytime.\n\n— CRC Claims Team\n614-907-4CRC`
+    body: `${name ? name + ', t' : 'T'}his is Columbus Roofing Company. Your project portal is ready: ${portalUrl}\n\nYou can check your claim status, upload documents, and message our team anytime.\n\n— CRC Claims Team\n(614) 743-1481`
   });
 
   // Follow up with vCard contact card
