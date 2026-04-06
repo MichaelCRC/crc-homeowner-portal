@@ -5,6 +5,9 @@ const { v4: uuidv4 } = require('uuid');
 const jobService = require('./jobs');
 
 const DOCS_DIR = path.join(__dirname, '..', 'data', 'documents');
+const NAVY = '#1B2360', TEAL = '#00B5CC';
+const LOGO_PATH = path.join(__dirname, '..', 'assets', 'crc_logo.png');
+const BRAND_FOOTER = 'Columbus Roofing Company | 5131 Post Rd Dublin OH 43017 | (614) 743-1481 | License HIC-L00838 | GAF Master Elite G09361 | Warranty issued upon final payment.';
 
 // IRC citations and descriptions for common Xactimate codes
 const CODE_REFERENCE = {
@@ -62,14 +65,15 @@ function generateSupplementPDF(jobId, comparison) {
 
   const pageWidth = 512; // 612 - 50 - 50
 
-  // --- HEADER ---
-  doc.fontSize(10).font('Helvetica-Bold').text('COLUMBUS ROOFING COMPANY', 50, 50);
-  doc.fontSize(8).font('Helvetica').text('(614) 743-1481  |  claims@columbusroofingco.com', 50, 64);
-  doc.moveTo(50, 82).lineTo(50 + pageWidth, 82).lineWidth(2).stroke('#111111');
+  // --- NAVY HEADER BAR ---
+  doc.save().rect(0, 0, 612, 65).fill(NAVY);
+  if (fs.existsSync(LOGO_PATH)) { try { doc.image(LOGO_PATH, 220, 4, { height: 42 }); } catch (e) {} }
+  doc.fontSize(9).fillColor('#FFF').text('SUPPLEMENT REQUEST', 0, 50, { width: 612, align: 'center' });
+  doc.restore();
+  doc.save().rect(0, 65, 612, 3).fill(TEAL).restore();
 
   // --- TITLE ---
-  doc.moveDown(1);
-  doc.fontSize(16).font('Helvetica-Bold').text(`SUPPLEMENT REQUEST`, { align: 'center' });
+  doc.y = 78;
   doc.fontSize(11).font('Helvetica').text(job.address, { align: 'center' });
   doc.moveDown(0.5);
 
@@ -120,8 +124,8 @@ function generateSupplementPDF(jobId, comparison) {
   doc.moveDown(1.5);
 
   // --- FOOTER ---
-  doc.fontSize(8).font('Helvetica').fillColor('#999999');
-  doc.text('Columbus Roofing Company  |  (614) 743-1481  |  claims@columbusroofingco.com', 50, doc.page.height - 50, { align: 'center' });
+  doc.fontSize(6).font('Helvetica').fillColor('#999999');
+  doc.text(BRAND_FOOTER, 40, 735, { width: 532, align: 'center' });
 
   doc.end();
 
