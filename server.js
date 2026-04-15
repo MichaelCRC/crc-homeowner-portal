@@ -32,6 +32,12 @@ app.get('/portal/:token', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'portal.html'));
 });
 
+// Legacy portal kept reachable for jobs that still need the older
+// feature set (Hover Design tab, full claim guide).
+app.get('/portal-legacy/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'portal-legacy.html'));
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });

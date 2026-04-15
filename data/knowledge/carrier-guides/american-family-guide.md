@@ -26,4 +26,4 @@ Supplement response: 1-2 weeks
 - CRC's HAAG inspection package is designed to match what AmFam adjusters expect
 - Their adjusters are accessible -- CRC communicates directly on your behalf
 
-Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481
+Columbus Roofing Company | claims@columbusroofingco.com

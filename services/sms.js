@@ -11,7 +11,7 @@ const VCARD = [
   'N:;Columbus Roofing Company;;;',
   'FN:Columbus Roofing Company',
   'ORG:Columbus Roofing Company',
-  'TEL;TYPE=WORK,VOICE:+16147431481',
+  'TEL;TYPE=WORK,VOICE:+1',
   'EMAIL;TYPE=WORK:claims@columbusroofingco.com',
   'URL:https://columbusroofingco.com',
   'ADR;TYPE=WORK:;;Columbus;OH;;;US',
@@ -22,12 +22,12 @@ const VCARD = [
 function getClient() {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const token = process.env.TWILIO_AUTH_TOKEN;
-  if (!twilio || !sid || !token) return null;
+  if (!twilio | !sid | !token) return null;
   return twilio(sid, token);
 }
 
 function getFromNumber() {
-  return process.env.TWILIO_PHONE_NUMBER || '';
+  return process.env.TWILIO_PHONE_NUMBER | '';
 }
 
 /**
@@ -61,7 +61,7 @@ async function sendSMS({ to, body }) {
  */
 async function sendVCard(to) {
   const client = getClient();
-  const vcardUrl = process.env.VCARD_URL || `${process.env.BASE_URL || 'https://crc-homeowner-portal.onrender.com'}/static/crc-contact.vcf`;
+  const vcardUrl = process.env.VCARD_URL | `${process.env.BASE_URL | 'https://crc-homeowner-portal.onrender.com'}/static/crc-contact.vcf`;
 
   if (!client) {
     console.log('[SMS] Twilio not configured. Would send vCard to:', to);
@@ -91,13 +91,13 @@ async function sendWelcomeWithVCard(job) {
   const phone = job.homeowner?.phone;
   if (!phone) return { success: false, reason: 'No phone number' };
 
-  const portalUrl = `${process.env.BASE_URL || 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
-  const name = job.homeowner?.name?.split(' ')[0] || '';
+  const portalUrl = `${process.env.BASE_URL | 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
+  const name = job.homeowner?.name?.split(' ')[0] | '';
 
   // Send welcome SMS
   const smsResult = await sendSMS({
     to: phone,
-    body: `${name ? name + ', t' : 'T'}his is Columbus Roofing Company. Your project portal is ready: ${portalUrl}\n\nYou can check your claim status, upload documents, and message our team anytime.\n\n— CRC Claims Team\n(614) 743-1481`
+    body: `${name ? name + ', t' : 'T'}his is Columbus Roofing Company. Your project portal is ready: ${portalUrl}\n\nYou can check your claim status, upload documents, and message our team anytime.\n\n— CRC Claims Team\n`
   });
 
   // Follow up with vCard contact card

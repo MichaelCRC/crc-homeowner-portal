@@ -24,9 +24,45 @@ const upload = multer({
   }
 });
 
-// GET /api/portal/:token — job overview
+// Mapping from internal stage IDs (1-6) to homeowner-facing labels.
+// The homeowner sees "Inspection Complete → Project Complete"; admin
+// uses the original taxonomy ("Claim Filed → Project Complete"). Order
+// matches so progress percentages line up.
+const HOMEOWNER_STAGES = [
+  { id: 1, label: 'Inspection Complete' },
+  { id: 2, label: 'Claim Filed' },
+  { id: 3, label: 'Adjuster Meeting' },
+  { id: 4, label: 'Scope Approved' },
+  { id: 5, label: 'Build Scheduled' },
+  { id: 6, label: 'Project Complete' },
+];
+
+// GET /api/portal/:token — job overview (homeowner-safe)
 router.get('/:token', portalAuth, (req, res) => {
   const job = req.job;
+  // Homeowner-safe documents — strip internal fields like supplement strategy.
+  const docs = (job.documents || []).map(d => ({
+    id: d.id, name: d.originalName || d.filename, type: d.type, date: d.uploadedAt, url: d.filename ? '/documents/' + d.filename : null,
+  }));
+  // Photos — pull inspection photos from CompanyCam helper if present.
+  let inspectionPhotos = [];
+  let postInstallPhotos = [];
+  try {
+    const { getPhotosFromJob } = require('../services/companycam');
+    const p = getPhotosFromJob(job) || {};
+    inspectionPhotos = p.inspection || [];
+    postInstallPhotos = p.postInstall || [];
+  } catch {}
+  // Timeline — only entries flagged visibleToHomeowner. Include stage
+  // history as an implicit fallback so legacy jobs still have a story.
+  const tl = (Array.isArray(job.timeline) ? job.timeline : []).filter(e => e.visibleToHomeowner !== false);
+  if (!tl.length) {
+    for (const h of (job.stageHistory || [])) {
+      const lbl = (HOMEOWNER_STAGES.find(s => s.id === h.stage) || {}).label || ('Stage ' + h.stage);
+      tl.push({ date: h.timestamp || h.date, event: 'stage_change', description: 'Moved to ' + lbl });
+    }
+  }
+  tl.sort((a, b) => new Date(b.date) - new Date(a.date));
   res.json({
     id: job.id,
     address: job.address,
@@ -35,18 +71,19 @@ router.get('/:token', portalAuth, (req, res) => {
     claimNumber: job.claimNumber,
     adjuster: job.adjuster,
     stage: job.stage,
-    stages: jobService.STAGES,
+    stages: HOMEOWNER_STAGES,
     stageDescription: jobService.STAGE_DESCRIPTIONS[job.stage],
-    documents: job.documents,
-    messages: job.messages.map(m => ({
-      id: m.id,
-      from: m.from,
-      body: m.body,
-      direction: m.direction,
-      timestamp: m.timestamp
-    })),
+    rep: { name: job.repName || 'Michael McGovern', phone: job.repPhone || '614-824-7462', email: job.repEmail || 'crc@columbusroofingco.com' },
+    inspectionDate: job.inspectionDate || null,
+    buildDate: job.buildDate || null,
+    approvedAmount: job.approvedAmount || null,
+    documents: docs,
+    photos: inspectionPhotos,
+    postInstallPhotos,
+    timeline: tl.slice(0, 50),
+    messages: (job.messages || []).map(m => ({ id: m.id, from: m.from, body: m.body, direction: m.direction, timestamp: m.timestamp })),
     createdAt: job.createdAt,
-    updatedAt: job.updatedAt
+    updatedAt: job.updatedAt,
   });
 });
 

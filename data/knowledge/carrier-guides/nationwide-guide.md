@@ -26,4 +26,4 @@ Supplement response: 1-2 weeks via portal
 - Nationwide's Columbus-based adjusters have strong local knowledge
 - CRC leverages the digital portal for efficient supplement processing
 
-Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481
+Columbus Roofing Company | claims@columbusroofingco.com

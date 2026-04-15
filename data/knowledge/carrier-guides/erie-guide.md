@@ -31,4 +31,4 @@ Supplement response: 1-2 weeks (faster than most)
 - CRC's supplement process with Erie is straightforward and typically resolves quickly
 - Erie does not use ladder assist vendors -- you get a real adjuster
 
-Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481
+Columbus Roofing Company | claims@columbusroofingco.com

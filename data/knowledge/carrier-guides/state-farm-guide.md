@@ -29,4 +29,4 @@ Supplement response: 2-4 weeks after submission
 - If your shingles are discontinued, Ohio matching law (OAC 3901-1-54) requires replacement to achieve a comparable appearance
 - State Farm supplements often require persistence -- CRC handles the entire process
 
-Columbus Roofing Company | claims@columbusroofingco.com | (614) 743-1481
+Columbus Roofing Company | claims@columbusroofingco.com

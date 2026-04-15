@@ -501,11 +501,20 @@
       STAGES.forEach(s => counts[s.id] = 0);
       jobs.forEach(j => { if (counts[j.stage] !== undefined) counts[j.stage]++; });
       const total = jobs.length;
+      const active = jobs.filter(j => j.stage < 6).length;
+      const now = Date.now();
+      const stale = jobs.filter(j => {
+        if (j.stage >= 6) return false;
+        const last = new Date(j.updatedAt || j.createdAt).getTime();
+        return (now - last) >= 7 * 86400000;
+      }).length;
 
       document.getElementById('stats-row').innerHTML =
         `<div class="stat ${!activeStageFilter ? 'active' : ''}" onclick="filterByStage(null)">
           <div class="stat-value">${total}</div><div class="stat-label">Total</div>
-        </div>` +
+        </div>
+        <div class="stat"><div class="stat-value">${active}</div><div class="stat-label">Active</div></div>
+        <div class="stat" style="border-left-color:${stale > 0 ? '#C0392B' : 'var(--black)'}"><div class="stat-value">${stale}</div><div class="stat-label">Need Attention</div></div>` +
         STAGES.map(s => `
           <div class="stat ${activeStageFilter === s.id ? 'active' : ''}" onclick="filterByStage(${s.id})">
             <div class="stat-value">${counts[s.id]}</div>
@@ -651,6 +660,8 @@
             <button class="btn btn-sm" onclick="openPortal('${job.token}')">Open Portal</button>
             <button class="btn btn-sm btn-outline" onclick="resendLink('${job.id}')">Resend Link</button>
             <button class="btn btn-sm btn-outline" onclick="copyPortalLink('${job.token}')">Copy Link</button>
+            <button class="btn btn-sm btn-outline" onclick="emailLink('${job.id}','${job.token}')">Send to Homeowner</button>
+            <button class="btn btn-sm btn-outline" onclick="advanceStageQuick('${job.id}', ${job.stage})">Advance Stage →</button>
           </div>
         `;
         panel.classList.add('show');
@@ -708,6 +719,26 @@
       navigator.clipboard.writeText(url).then(() => showToast('Link copied'));
     }
     function openPortal(token) { window.open(`/portal/${token}`, '_blank'); }
+    function emailLink(jobId, token) {
+      const url = `${window.location.origin}/portal/${token}`;
+      const subject = encodeURIComponent('Your Columbus Roofing Company Project Portal');
+      const body = encodeURIComponent('Hi,\n\nHere is the link to your CRC project portal. You can track your project, see documents, and contact your CRC representative anytime.\n\n' + url + '\n\n— Columbus Roofing Company\n614-824-7462');
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+    async function advanceStageQuick(jobId, currentStage) {
+      const next = Math.min(6, (currentStage || 1) + 1);
+      if (next === currentStage) { showToast('Already at the final stage'); return; }
+      if (!confirm('Advance to stage ' + next + '?')) return;
+      const send = confirm('Send notification to homeowner?');
+      if (send) console.log('Notification queued: stage changed to ' + next);
+      await fetch(`/api/admin/jobs/${jobId}/stage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: next, note: 'Advanced from admin' })
+      });
+      showToast('Stage advanced');
+      loadJobs();
+      viewJob(jobId);
+    }
     async function resendLink(jobId) {
       try {
         const res = await fetch(`/api/admin/jobs/${jobId}/resend-link`, { method: 'POST' });

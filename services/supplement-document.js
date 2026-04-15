@@ -6,8 +6,8 @@ const jobService = require('./jobs');
 
 const DOCS_DIR = path.join(__dirname, '..', 'data', 'documents');
 const NAVY = '#1B2360', TEAL = '#00B5CC';
-const LOGO_PATH = path.join(__dirname, '..', 'assets', 'crc_logo.png');
-const BRAND_FOOTER = 'Columbus Roofing Company | 5131 Post Rd Dublin OH 43017 | (614) 743-1481 | License HIC-L00838 | GAF Master Elite G09361 | Warranty issued upon final payment.';
+const LOGO_PATH = path.join(__dirname, '..', 'static', 'crc_logo.png');
+const BRAND_FOOTER = 'Columbus Roofing Company | 5131 Post Rd Dublin OH 43017 | License HIC-L00838 | GAF Master Elite G09361 | Warranty issued upon final payment.';
 
 // IRC citations and descriptions for common Xactimate codes
 const CODE_REFERENCE = {
@@ -32,7 +32,7 @@ const CODE_REFERENCE = {
 };
 
 function getCodeInfo(code) {
-  return CODE_REFERENCE[code] || {
+  return CODE_REFERENCE[code] | {
     description: code,
     irc: '—',
     reason: 'Required per scope of damage and industry standards'
@@ -67,7 +67,7 @@ function generateSupplementPDF(jobId, comparison) {
 
   // --- NAVY HEADER BAR ---
   doc.save().rect(0, 0, 612, 65).fill(NAVY);
-  if (fs.existsSync(LOGO_PATH)) { try { doc.image(LOGO_PATH, 220, 4, { height: 42 }); } catch (e) {} }
+  if (fs.existsSync(LOGO_PATH)) { try { doc.image(LOGO_PATH, (612 - 100) / 2, 4, { height: 42 }); } catch (e) {} }
   doc.fontSize(9).fillColor('#FFF').text('SUPPLEMENT REQUEST', 0, 50, { width: 612, align: 'center' });
   doc.restore();
   doc.save().rect(0, 65, 612, 3).fill(TEAL).restore();
@@ -84,11 +84,11 @@ function generateSupplementPDF(jobId, comparison) {
   doc.moveDown(0.3);
   doc.font('Helvetica').fontSize(9);
   doc.text(`Property:        ${job.address}`);
-  doc.text(`Homeowner:       ${job.homeowner?.name || '—'}`);
-  doc.text(`Carrier:         ${job.carrier || '—'}`);
-  doc.text(`Claim Number:    ${job.claimNumber || '—'}`);
-  doc.text(`Adjuster:        ${job.adjuster?.name || '—'}`);
-  doc.text(`Price List:      ${comparison.priceList || 'OHCO8X'} MAR26`);
+  doc.text(`Homeowner:       ${job.homeowner?.name | '—'}`);
+  doc.text(`Carrier:         ${job.carrier | '—'}`);
+  doc.text(`Claim Number:    ${job.claimNumber | '—'}`);
+  doc.text(`Adjuster:        ${job.adjuster?.name | '—'}`);
+  doc.text(`Price List:      ${comparison.priceList | 'OHCO8X'} MAR26`);
   doc.text(`Date Prepared:   ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`);
   doc.moveDown(1);
 
@@ -124,8 +124,12 @@ function generateSupplementPDF(jobId, comparison) {
   doc.moveDown(1.5);
 
   // --- FOOTER ---
-  doc.fontSize(6).font('Helvetica').fillColor('#999999');
-  doc.text(BRAND_FOOTER, 40, 735, { width: 532, align: 'center' });
+  doc.save();
+  doc.moveTo(40, 735).lineTo(572, 735).lineWidth(1).stroke(TEAL);
+  doc.fontSize(6).font('Helvetica').fillColor('#333333');
+  doc.text('Columbus Roofing Company | The Everyday Standard.', 40, 739, { width: 432, align: 'center' });
+  doc.text('columbusroofingco.com', 472, 739, { width: 100, align: 'right' });
+  doc.restore();
 
   doc.end();
 

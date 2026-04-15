@@ -18,17 +18,17 @@ function buildSupplementEmailDraft(jobId, comparison, pdfInfo) {
   if (!job) throw new Error('Job not found');
 
   const allGapItems = [...comparison.missingItems, ...comparison.quantityGaps];
-  const adjusterName = job.adjuster?.name || 'Claims Adjuster';
-  const adjusterEmail = job.adjuster?.email || '';
+  const adjusterName = job.adjuster?.name | 'Claims Adjuster';
+  const adjusterEmail = job.adjuster?.email | '';
 
   // Build line item summary with IRC citations
   const itemLines = allGapItems.map(item => {
-    const info = CODE_REFERENCE[item.code] || { description: item.code, irc: '—', reason: '' };
+    const info = CODE_REFERENCE[item.code] | { description: item.code, irc: '—', reason: '' };
     const label = item.carrierQty === 0 ? 'OMITTED' : `UNDER-SCOPED (${item.carrierQty} → ${item.crcQty} ${item.unit})`;
     return { code: item.code, description: info.description, irc: info.irc, reason: info.reason, label, gapQty: item.gapQty, unit: item.unit };
   });
 
-  const subject = `Supplement Request — ${job.address} — Claim #${job.claimNumber || 'N/A'}`;
+  const subject = `Supplement Request — ${job.address} — Claim #${job.claimNumber | 'N/A'}`;
 
   const textBody = buildTextBody(job, adjusterName, itemLines, comparison);
   const htmlBody = buildHtmlBody(job, adjusterName, itemLines, comparison);
@@ -53,13 +53,13 @@ function buildSupplementEmailDraft(jobId, comparison, pdfInfo) {
   // Store draft on job record
   jobService.updateJob(job.id, { supplementEmailDraft: draft });
 
-  console.log(`[Supplement] Email draft prepared for job ${jobId} → ${adjusterEmail || '(no adjuster email)'}`);
+  console.log(`[Supplement] Email draft prepared for job ${jobId} → ${adjusterEmail | '(no adjuster email)'}`);
   return draft;
 }
 
 function buildTextBody(job, adjusterName, itemLines, comparison) {
   let text = `${adjusterName},\n\n`;
-  text += `Re: ${job.address} — Claim #${job.claimNumber || 'N/A'} — ${job.carrier || 'Carrier'}\n\n`;
+  text += `Re: ${job.address} — Claim #${job.claimNumber | 'N/A'} — ${job.carrier | 'Carrier'}\n\n`;
   text += `After a thorough review of the carrier's scope of loss against our field inspection findings, `;
   text += `Columbus Roofing Company has identified ${itemLines.length} line item(s) that were either omitted `;
   text += `or under-scoped in the original estimate. `;
@@ -79,7 +79,7 @@ function buildTextBody(job, adjusterName, itemLines, comparison) {
   text += `Respectfully,\n`;
   text += `Columbus Roofing Company\n`;
   text += `claims@columbusroofingco.com\n`;
-  text += `(614) 743-1481\n`;
+  text += `\n`;
 
   return text;
 }
@@ -97,12 +97,12 @@ function buildHtmlBody(job, adjusterName, itemLines, comparison) {
   return `<div style="font-family:'Inter',Helvetica,Arial,sans-serif;max-width:700px;margin:0 auto;padding:0;background:#ffffff">
   <div style="padding:24px;border-bottom:2px solid #111">
     <div style="font-size:14px;font-weight:900;letter-spacing:2px;color:#111">COLUMBUS ROOFING COMPANY</div>
-    <div style="font-size:11px;color:#666;margin-top:4px">(614) 743-1481 &nbsp;|&nbsp; claims@columbusroofingco.com</div>
+    <div style="font-size:11px;color:#666;margin-top:4px"> &nbsp;|&nbsp; claims@columbusroofingco.com</div>
   </div>
   <div style="padding:28px 24px">
     <p style="font-size:14px;color:#111;margin:0 0 6px">${adjusterName},</p>
     <p style="font-size:13px;color:#333;line-height:1.6;margin:12px 0 20px">
-      Re: <strong>${job.address}</strong> — Claim #${job.claimNumber || 'N/A'} — ${job.carrier || 'Carrier'}
+      Re: <strong>${job.address}</strong> — Claim #${job.claimNumber | 'N/A'} — ${job.carrier | 'Carrier'}
     </p>
     <p style="font-size:13px;color:#333;line-height:1.6;margin:0 0 20px">
       After a thorough review of the carrier's scope of loss against our field inspection findings,
@@ -139,7 +139,7 @@ function buildHtmlBody(job, adjusterName, itemLines, comparison) {
     <p style="font-size:13px;font-weight:700;color:#111;margin:4px 0 0">Columbus Roofing Company</p>
   </div>
   <div style="padding:16px 24px;border-top:1px solid #e5e5e5">
-    <p style="font-size:11px;color:#999;margin:0">claims@columbusroofingco.com &nbsp;|&nbsp; (614) 743-1481</p>
+    <p style="font-size:11px;color:#999;margin:0">claims@columbusroofingco.com &nbsp;|&nbsp; </p>
   </div>
 </div>`;
 }

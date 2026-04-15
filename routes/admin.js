@@ -181,4 +181,28 @@ router.post('/geocode', adminAuth, async (req, res) => {
   res.json(result);
 });
 
+// POST /api/admin/jobs/:id/timeline — append a homeowner-visible event.
+router.post('/jobs/:id/timeline', adminAuth, (req, res) => {
+  const { event, description, visibleToHomeowner, date } = req.body || {};
+  if (!description) return res.status(400).json({ error: 'description required' });
+  const entry = jobService.addTimelineEntry(req.params.id, {
+    date, event: event || 'note', description, visibleToHomeowner: visibleToHomeowner !== false,
+  });
+  if (!entry) return res.status(404).json({ error: 'Job not found' });
+  res.json({ success: true, entry });
+});
+
+// PATCH /api/admin/jobs/:id — partial update for the new homeowner-
+// visible fields (rep info, dates, approved amount).
+router.patch('/jobs/:id', adminAuth, (req, res) => {
+  const allowed = ['repName', 'repPhone', 'repEmail', 'inspectionDate', 'buildDate', 'approvedAmount', 'address', 'carrier', 'claimNumber', 'notes', 'companycamProjectId'];
+  const patch = {};
+  for (const k of allowed) if (req.body[k] !== undefined) patch[k] = req.body[k];
+  if (req.body.homeowner) patch.homeowner = { ...(jobService.getJobById(req.params.id)?.homeowner || {}), ...req.body.homeowner };
+  if (req.body.adjuster)  patch.adjuster  = { ...(jobService.getJobById(req.params.id)?.adjuster  || {}), ...req.body.adjuster };
+  const updated = jobService.updateJob(req.params.id, patch);
+  if (!updated) return res.status(404).json({ error: 'Job not found' });
+  res.json({ success: true, job: updated });
+});
+
 module.exports = router;

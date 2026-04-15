@@ -3,9 +3,8 @@ VERSION:3.0
 N:;Columbus Roofing Company;;;
 FN:Columbus Roofing Company
 ORG:Columbus Roofing Company
-TEL;TYPE=WORK,VOICE:+16147431481
-EMAIL;TYPE=WORK:claims@columbusroofingco.com
+EMAIL;TYPE=WORK:crc@columbusroofingco.com
 URL:https://columbusroofingco.com
-ADR;TYPE=WORK:;;Columbus;OH;;;US
-NOTE:Your CRC Claims Team
+ADR;TYPE=WORK:;;5131 Post Rd;Dublin;OH;43017;US
+NOTE:Columbus Roofing Company — The Everyday Standard
 END:VCARD

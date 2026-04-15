@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRC — Your Project Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #111111;
+      --white: #FFFFFF;
+      --gray-100: #F8F8F8;
+      --gray-200: #E5E5E5;
+      --gray-300: #CCCCCC;
+      --gray-400: #999999;
+      --gray-500: #666666;
+      --green: #1A7A1A;
+      --red: #CC0000;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 2px solid var(--black);
+    }
+    .header-logo {
+      height: 44px;
+    }
+    .header-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    /* NAV TABS */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--gray-200);
+      overflow-x: auto;
+    }
+    .tab {
+      flex: 1;
+      padding: 14px 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.15s;
+      white-space: nowrap;
+    }
+    .tab:hover { background: var(--gray-100); }
+    .tab.active {
+      border-bottom-color: var(--black);
+    }
+
+    /* CONTENT */
+    .content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* PROGRESS TRACKER */
+    .progress-tracker {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 40px;
+    }
+    .progress-tracker::before {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 24px;
+      right: 24px;
+      height: 2px;
+      background: var(--gray-200);
+    }
+    .progress-tracker .line-fill {
+      position: absolute;
+      top: 16px;
+      left: 24px;
+      height: 2px;
+      background: var(--black);
+      transition: width 0.5s ease;
+    }
+    .stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+    .stage-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--gray-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+    .stage.completed .stage-dot {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+    .stage.current .stage-dot {
+      border-color: var(--black);
+      border-width: 3px;
+      box-shadow: 0 0 0 4px rgba(17,17,17,0.1);
+    }
+    .stage-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-align: center;
+      color: var(--gray-400);
+      max-width: 80px;
+    }
+    .stage.completed .stage-label,
+    .stage.current .stage-label {
+      color: var(--black);
+    }
+
+    /* CHECKMARK SVG */
+    .check-svg { display: none; }
+    .stage.completed .check-svg { display: block; }
+    .stage.completed .stage-num { display: none; }
+
+    /* STATUS BOX */
+    .status-box {
+      background: var(--gray-100);
+      padding: 24px;
+      margin-bottom: 32px;
+      border-left: 4px solid var(--black);
+    }
+    .status-box h3 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .status-box p {
+      font-size: 15px;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+
+    /* INFO GRID */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 480px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    .info-block label {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 4px;
+    }
+    .info-block span {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* CRC CONTACT */
+    .crc-contact {
+      border-top: 2px solid var(--black);
+      padding-top: 24px;
+      margin-top: 40px;
+    }
+    .crc-contact h3 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .crc-contact p {
+      font-size: 14px;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+    }
+    .crc-contact a {
+      color: var(--black);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* DOCUMENTS */
+    .upload-zone {
+      border: 2px dashed var(--gray-300);
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 32px;
+      transition: border-color 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--black);
+    }
+    .upload-zone h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .upload-zone p {
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+    .upload-zone input { display: none; }
+
+    .doc-type-select {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .doc-type-btn {
+      padding: 8px 16px;
+      border: 2px solid var(--gray-200);
+      background: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .doc-type-btn.active {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .doc-list { list-style: none; }
+    .doc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .doc-item:last-child { border-bottom: none; }
+    .doc-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .doc-meta {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-top: 2px;
+    }
+    .doc-status {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      background: var(--gray-100);
+    }
+    .doc-status.received { background: var(--black); color: var(--white); }
+
+    /* PHOTOS */
+    .photo-section-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .photo-thumb {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      background: var(--gray-100);
+    }
+    .photo-empty {
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 14px;
+    }
+
+    /* MESSAGES */
+    .message-list {
+      margin-bottom: 32px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .message-item {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .message-item:last-child { border-bottom: none; }
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .message-from {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .message-time {
+      font-size: 11px;
+      color: var(--gray-400);
+    }
+    .message-body {
+      font-size: 14px;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+    .message-direction-out .message-from { color: var(--black); }
+    .message-direction-in .message-from { color: var(--gray-500); }
+
+    .message-compose {
+      display: flex;
+      gap: 8px;
+    }
+    .message-compose textarea {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 12px 16px;
+      border: 2px solid var(--gray-200);
+      resize: none;
+      min-height: 80px;
+      outline: none;
+    }
+    .message-compose textarea:focus {
+      border-color: var(--black);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 2px solid var(--black);
+      background: var(--black);
+      color: var(--white);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background: var(--white);
+      color: var(--black);
+    }
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .btn-outline {
+      background: var(--white);
+      color: var(--black);
+    }
+    .btn-outline:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--black);
+      color: var(--white);
+      padding: 14px 28px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .loading-text {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-400);
+    }
+
+    /* ERROR PAGE */
+    .error-page {
+      text-align: center;
+      padding: 120px 24px;
+    }
+    .error-page h1 {
+      font-size: 48px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+    .error-page p {
+      font-size: 15px;
+      color: var(--gray-500);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* RESPONSIVE — tablet */
+    @media (max-width: 600px) {
+      .header { padding: 12px 16px; }
+      .header-logo { height: 36px; }
+      .header-title { font-size: 10px; letter-spacing: 2px; }
+      .content { padding: 24px 16px; }
+      .stage-label { font-size: 8px; max-width: 56px; }
+      .stage-dot { width: 26px; height: 26px; font-size: 10px; }
+      .tab { font-size: 11px; padding: 12px 4px; letter-spacing: 1px; }
+      .info-grid { grid-template-columns: 1fr; gap: 16px; }
+      .photo-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      .message-compose { flex-direction: column; }
+      .message-compose textarea { min-height: 60px; }
+      .upload-zone { padding: 28px 16px; }
+      .doc-type-select { gap: 4px; }
+      .doc-type-btn { padding: 6px 12px; font-size: 10px; }
+      .status-box { padding: 20px 16px; }
+      .crc-contact { margin-top: 32px; }
+      .btn { padding: 12px 20px; font-size: 11px; width: 100%; }
+    }
+
+    /* RESPONSIVE — phone 375px */
+    @media (max-width: 400px) {
+      .header { padding: 10px 12px; }
+      .header-logo { height: 32px; }
+      .header-title { font-size: 9px; letter-spacing: 1.5px; }
+      .content { padding: 20px 12px; }
+      .tabs { gap: 0; }
+      .tab { font-size: 10px; padding: 10px 2px; letter-spacing: 0.5px; }
+      .progress-tracker { margin-bottom: 28px; }
+      .stage-dot { width: 22px; height: 22px; font-size: 9px; }
+      .stage-label { font-size: 7px; max-width: 48px; line-height: 1.2; }
+      .stage.current .stage-dot { box-shadow: 0 0 0 3px rgba(17,17,17,0.1); }
+      .status-box { padding: 16px 12px; }
+      .status-box h3 { font-size: 11px; }
+      .status-box p { font-size: 13px; }
+      .info-block label { font-size: 9px; }
+      .info-block span { font-size: 14px; }
+      .crc-contact h3 { font-size: 11px; }
+      .crc-contact p { font-size: 13px; }
+      .upload-zone { padding: 24px 12px; }
+      .upload-zone h4 { font-size: 13px; }
+      .doc-name { font-size: 13px; }
+      .doc-status { font-size: 10px; padding: 3px 8px; }
+      .photo-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 4px; }
+      .message-from { font-size: 11px; }
+      .message-body { font-size: 13px; }
+      .message-compose textarea { font-size: 13px; padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <img src="/static/crc_logo.png" alt="CRC" class="header-logo">
+    <span class="header-title">Project Portal</span>
+  </header>
+
+  <!-- LOADING STATE -->
+  <div id="loading" class="loading">
+    <p class="loading-text">Loading your portal…</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="error-page" class="error-page" style="display:none">
+    <h1>404</h1>
+    <p>This portal link is invalid or has expired. Please contact CRC at <strong></strong> or <strong>claims@columbusroofingco.com</strong> if you need access.</p>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" style="display:none">
+    <!-- TABS -->
+    <nav class="tabs">
+      <div class="tab active" data-tab="overview">Overview</div>
+      <div class="tab" data-tab="yourclaim">Your Claim</div>
+      <div class="tab" data-tab="documents">Documents</div>
+      <div class="tab" data-tab="design">Design</div>
+      <div class="tab" data-tab="photos">Photos</div>
+      <div class="tab" data-tab="messages">Messages</div>
+    </nav>
+
+    <!-- OVERVIEW -->
+    <div class="content">
+      <div id="panel-overview" class="tab-panel active">
+        <div class="progress-tracker" id="progress-tracker">
+          <!-- Generated by JS -->
+          <div class="line-fill" id="line-fill"></div>
+        </div>
+
+        <div class="status-box">
+          <h3>What's Happening Now</h3>
+          <p id="stage-description"></p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-block">
+            <label>Property</label>
+            <span id="info-address"></span>
+          </div>
+          <div class="info-block">
+            <label>Insurance Carrier</label>
+            <span id="info-carrier"></span>
+          </div>
+          <div class="info-block">
+            <label>Claim Number</label>
+            <span id="info-claim"></span>
+          </div>
+          <div class="info-block">
+            <label>Adjuster</label>
+            <span id="info-adjuster"></span>
+          </div>
+        </div>
+
+        <!-- HOME VALUE / WEALTHGUARD -->
+        <div id="home-value-card" style="display:none; background:var(--gray-100); padding:24px; margin-bottom:32px; border-left:4px solid var(--green)">
+          <h3 style="font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:12px">Your Home Investment</h3>
+          <div style="display:flex; gap:24px; flex-wrap:wrap">
+            <div>
+              <div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--gray-400); margin-bottom:4px">Current Estimated Value</div>
+              <div id="hv-current" style="font-size:24px; font-weight:900"></div>
+            </div>
+            <div>
+              <div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--gray-400); margin-bottom:4px">After New Roof</div>
+              <div id="hv-projected" style="font-size:24px; font-weight:900; color:var(--green)"></div>
+            </div>
+          </div>
+          <p id="hv-message" style="font-size:14px; color:var(--gray-500); margin-top:12px; line-height:1.6"></p>
+          <p style="font-size:10px; color:var(--gray-400); margin-top:8px">Based on industry data. A new roof typically returns 60-70% of project cost in added home value.</p>
+        </div>
+
+        <div class="crc-contact">
+          <h3>Your CRC Team</h3>
+          <p></p>
+          <p><a href="mailto:claims@columbusroofingco.com">claims@columbusroofingco.com</a></p>
+          <p style="margin-top:8px; font-size:12px; color:var(--gray-400)">Columbus Roofing Company — Columbus, OH</p>
+        </div>
+      </div>
+
+      <!-- YOUR CLAIM -->
+      <div id="panel-yourclaim" class="tab-panel">
+        <div id="claim-guide-content" style="font-size:14px;line-height:1.7;color:#1E293B">
+          <p style="color:#64748B">Loading your claim guide...</p>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div id="panel-documents" class="tab-panel">
+        <div class="doc-type-select">
+          <button class="doc-type-btn active" data-type="scope">Scope of Loss</button>
+          <button class="doc-type-btn" data-type="insurance">Insurance Doc</button>
+          <button class="doc-type-btn" data-type="other">Other</button>
+        </div>
+
+        <div class="upload-zone" id="upload-zone">
+          <h4>Upload Document</h4>
+          <p>Drop file here or tap to browse</p>
+          <p style="margin-top:4px">PDF, JPG, PNG, DOC — max 25MB</p>
+          <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+        </div>
+
+        <div id="upload-status" style="display:none; margin-bottom:24px;">
+          <p style="font-size:13px; font-weight:700; color:var(--green)">✓ Document received — CRC is reviewing</p>
+        </div>
+
+        <ul class="doc-list" id="doc-list">
+          <!-- Generated by JS -->
+        </ul>
+
+        <div id="no-docs" class="photo-empty" style="display:none">
+          No documents uploaded yet
+        </div>
+      </div>
+
+      <!-- DESIGN (Hover Visualization) -->
+      <div id="panel-design" class="tab-panel">
+        <div id="design-loading" class="loading" style="padding:40px">
+          <p class="loading-text">Loading roof visualization…</p>
+        </div>
+
+        <div id="design-content" style="display:none">
+          <div style="margin-bottom:20px">
+            <h3 style="font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px">Roof Design Preview</h3>
+            <p style="font-size:14px; color:var(--gray-500); line-height:1.6">See how different shingle colors look on your actual home. Use this tool to explore options before your color selection appointment.</p>
+          </div>
+          <div id="hover-embed" style="width:100%; border:2px solid var(--gray-200); background:var(--gray-100); min-height:500px; position:relative">
+            <iframe id="hover-iframe" style="width:100%; height:600px; border:none" allowfullscreen></iframe>
+          </div>
+          <p style="font-size:11px; color:var(--gray-400); margin-top:12px; text-align:center">3D model provided by Hover. Pan, zoom, and rotate to view all angles.</p>
+        </div>
+
+        <div id="design-unavailable" class="photo-empty" style="display:none">
+          <p>Roof visualization is not yet available for your property.</p>
+          <p style="margin-top:8px; font-size:12px; color:var(--gray-400)">This will activate after CRC completes the Hover 3D capture of your home.</p>
+        </div>
+      </div>
+
+      <!-- PHOTOS -->
+      <div id="panel-photos" class="tab-panel">
+        <div id="photos-loading" class="loading" style="padding:40px">
+          <p class="loading-text">Loading photos…</p>
+        </div>
+
+        <div id="inspection-section" style="display:none">
+          <div class="photo-section-label">Inspection Photos</div>
+          <div class="photo-grid" id="inspection-grid"></div>
+        </div>
+
+        <div id="postinstall-section" style="display:none">
+          <div class="photo-section-label">Post-Install Photos</div>
+          <div class="photo-grid" id="postinstall-grid"></div>
+        </div>
+
+        <div id="no-photos" class="photo-empty" style="display:none">
+          Inspection photos will appear here after your CRC inspection is complete.
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div id="panel-messages" class="tab-panel">
+        <div class="message-list" id="message-list">
+          <!-- Generated by JS -->
+        </div>
+
+        <div id="no-messages" class="photo-empty" style="display:none; margin-bottom:24px">
+          No messages yet
+        </div>
+
+        <div class="message-compose">
+          <textarea id="message-input" placeholder="Type your message to the CRC team…"></textarea>
+        </div>
+        <div style="margin-top:8px; text-align:right;">
+          <button class="btn" id="send-message-btn">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TOKEN = window.location.pathname.split('/portal/')[1];
+    let jobData = null;
+    let selectedDocType = 'scope';
+
+    // ── INIT ────────────────────────────────
+    async function init() {
+      try {
+        const res = await fetch(`/api/portal/${TOKEN}`);
+        if (!res.ok) throw new Error('Not found');
+        jobData = await res.json();
+        render();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        loadHomeValue();
+      } catch {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error-page').style.display = 'block';
+      }
+    }
+
+    // ── RENDER ──────────────────────────────
+    function render() {
+      renderProgress();
+      renderOverview();
+      renderDocuments();
+      renderMessages();
+    }
+
+    function renderProgress() {
+      const tracker = document.getElementById('progress-tracker');
+      const fill = document.getElementById('line-fill');
+      // Clear existing stages (keep line-fill)
+      tracker.querySelectorAll('.stage').forEach(el => el.remove());
+
+      const stages = jobData.stages | [];
+      const current = jobData.stage | 1;
+
+      stages.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'stage';
+        if (s.id < current) div.classList.add('completed');
+        if (s.id === current) div.classList.add('current');
+
+        div.innerHTML = `
+          <div class="stage-dot">
+            <span class="stage-num">${s.id}</span>
+            <svg class="check-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="stage-label">${s.label}</div>
+        `;
+        tracker.appendChild(div);
+      });
+
+      // Fill line
+      const pct = stages.length > 1 ? ((current - 1) / (stages.length - 1)) * 100 : 0;
+      const maxWidth = tracker.offsetWidth - 48;
+      fill.style.width = `${(pct / 100) * maxWidth}px`;
+    }
+
+    function renderOverview() {
+      document.getElementById('stage-description').textContent = jobData.stageDescription | '';
+      document.getElementById('info-address').textContent = jobData.address | '—';
+      document.getElementById('info-carrier').textContent = jobData.carrier | '—';
+      document.getElementById('info-claim').textContent = jobData.claimNumber | '—';
+      document.getElementById('info-adjuster').textContent = jobData.adjuster?.name | '—';
+    }
+
+    async function loadClaimGuide() {
+      const el = document.getElementById('claim-guide-content');
+      try {
+        const res = await fetch(`/api/portal/${token}/claim-guide`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        let html = '';
+        // Current stage highlight
+        const currentStage = jobData.stage | 1;
+        const stageNames = ['Inspection', 'Scope & Estimate', 'Insurance Review', 'Supplement', 'Approval', 'Completion'];
+        html += '<div style="margin-bottom:24px"><h3 style="font-size:16px;color:#1B2360;margin-bottom:12px">Where You Are in the Process</h3>';
+        html += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+        stageNames.forEach((s, i) => {
+          const active = i + 1 === currentStage;
+          const done = i + 1 < currentStage;
+          html += `<div style="padding:8px 14px;border-radius:6px;font-size:12px;font-weight:${active?700:400};background:${active?'#00B5CC':done?'#D1FAE5':'#F1F5F9'};color:${active?'#fff':done?'#065F46':'#64748B'}">${s}</div>`;
+        });
+        html += '</div></div>';
+
+        // Universal process
+        if (data.universalProcess) {
+          html += `<div style="margin-bottom:24px">${formatGuideSection(data.universalProcess)}</div>`;
+        }
+
+        // Carrier-specific section
+        if (data.carrierGuide) {
+          html += `<div style="margin-bottom:24px;padding:16px;border:1px solid #E2E8F0;border-radius:8px">`;
+          html += `<h3 style="font-size:16px;color:#1B2360;margin-bottom:12px">Your ${jobData.carrier | ''} Claim</h3>`;
+          html += formatGuideSection(data.carrierGuide);
+          html += '</div>';
+        }
+
+        // Ohio rights
+        if (data.ohioRights) {
+          html += `<div style="padding:16px;background:#F8FAFC;border-radius:8px">${formatGuideSection(data.ohioRights)}</div>`;
+        }
+
+        el.innerHTML = html;
+      } catch (e) {
+        el.innerHTML = '<p style="color:#64748B">Claim guide is being prepared. Check back soon.</p>';
+      }
+    }
+
+    function formatGuideSection(md) {
+      return md
+        .replace(/^### (.+)$/gm, '<h4 style="font-size:14px;font-weight:700;color:#1B2360;margin:16px 0 8px">$1</h4>')
+        .replace(/^## (.+)$/gm, '<h3 style="font-size:16px;font-weight:700;color:#1B2360;margin:20px 0 10px">$1</h3>')
+        .replace(/^\d+\. (.+)$/gm, '<div style="padding:4px 0 4px 16px">$1</div>')
+        .replace(/^- (.+)$/gm, '<div style="padding:2px 0 2px 16px;color:#475569">$1</div>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function renderDocuments() {
+      const list = document.getElementById('doc-list');
+      const noDocs = document.getElementById('no-docs');
+      const docs = jobData.documents | [];
+
+      if (docs.length === 0) {
+        list.innerHTML = '';
+        noDocs.style.display = 'block';
+        return;
+      }
+      noDocs.style.display = 'none';
+      list.innerHTML = docs.map(d => `
+        <li class="doc-item">
+          <div>
+            <div class="doc-name">${d.originalName | d.filename}</div>
+            <div class="doc-meta">${formatDate(d.uploadedAt)} · ${formatSize(d.size)}</div>
+          </div>
+          <div class="doc-status received">${d.status | 'Received'}</div>
+        </li>
+      `).join('');
+    }
+
+    function renderMessages() {
+      const list = document.getElementById('message-list');
+      const noMsg = document.getElementById('no-messages');
+      const msgs = jobData.messages | [];
+
+      if (msgs.length === 0) {
+        list.innerHTML = '';
+        noMsg.style.display = 'block';
+        return;
+      }
+      noMsg.style.display = 'none';
+      list.innerHTML = msgs.map(m => `
+        <div class="message-item message-direction-${m.direction === 'outbound' ? 'out' : 'in'}">
+          <div class="message-header">
+            <span class="message-from">${m.from}</span>
+            <span class="message-time">${formatDate(m.timestamp)}</span>
+          </div>
+          <div class="message-body">${escapeHtml(m.body)}</div>
+        </div>
+      `).join('');
+      list.scrollTop = list.scrollHeight;
+    }
+
+    // ── PHOTOS (lazy load) ──────────────────
+    async function loadPhotos() {
+      const loadingEl = document.getElementById('photos-loading');
+      const noPhotos = document.getElementById('no-photos');
+      const inspSec = document.getElementById('inspection-section');
+      const postSec = document.getElementById('postinstall-section');
+
+      try {
+        const res = await fetch(`/api/portal/${TOKEN}/photos`);
+        const data = await res.json();
+        loadingEl.style.display = 'none';
+
+        const insp = data.inspection | [];
+        const post = data.postInstall | [];
+
+        if (insp.length === 0 && post.length === 0) {
+          noPhotos.style.display = 'block';
+          return;
+        }
+
+        if (insp.length > 0) {
+          inspSec.style.display = 'block';
+          document.getElementById('inspection-grid').innerHTML = insp.map(p =>
+            `<img class="photo-thumb" src="${p.thumb | p.url}" alt="${p.caption | 'Inspection photo'}" loading="lazy">`
+          ).join('');
+        }
+
+        if (post.length > 0) {
+          postSec.style.display = 'block';
+          document.getElementById('postinstall-grid').innerHTML = post.map(p =>
+            `<img class="photo-thumb" src="${p.thumb | p.url}" alt="${p.caption | 'Post-install photo'}" loading="lazy">`
+          ).join('');
+        }
+      } catch {
+        loadingEl.style.display = 'none';
+        noPhotos.style.display = 'block';
+      }
+    }
+
+    // ── TAB SWITCHING ───────────────────────
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`panel-${tab.dataset.tab}`).classList.add('active');
+
+        if (tab.dataset.tab === 'yourclaim') loadClaimGuide();
+        if (tab.dataset.tab === 'design') loadDesign();
+        if (tab.dataset.tab === 'photos') loadPhotos();
+      });
+    });
+
+    // ── FILE UPLOAD ─────────────────────────
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) uploadFile(fileInput.files[0]);
+    });
+
+    // Doc type buttons
+    document.querySelectorAll('.doc-type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.doc-type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedDocType = btn.dataset.type;
+      });
+    });
+
+    async function uploadFile(file) {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('docType', selectedDocType);
+
+      try {
+        const res = await fetch(`/api/portal/${TOKEN}/upload`, { method: 'POST', body: form });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('upload-status').style.display = 'block';
+          showToast('Document received — CRC is reviewing');
+          // Refresh job data
+          const refreshRes = await fetch(`/api/portal/${TOKEN}`);
+          jobData = await refreshRes.json();
+          renderDocuments();
+          renderProgress();
+          fileInput.value = '';
+        } else {
+          showToast('Something went wrong. Please try again or contact CRC directly.');
+        }
+      } catch {
+        showToast('Something went wrong. Please try again or contact CRC directly.');
+      }
+    }
+
+    // ── SEND MESSAGE ────────────────────────
+    document.getElementById('send-message-btn').addEventListener('click', async () => {
+      const input = document.getElementById('message-input');
+      const body = input.value.trim();
+      if (!body) return;
+
+      const btn = document.getElementById('send-message-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(`/api/portal/${TOKEN}/message`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ body })
+        });
+        const data = await res.json();
+        if (data.success) {
+          input.value = '';
+          showToast('Message sent to CRC');
+          const refreshRes = await fetch(`/api/portal/${TOKEN}`);
+          jobData = await refreshRes.json();
+          renderMessages();
+        }
+      } catch {
+        showToast('Something went wrong. Please try again or contact CRC directly.');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+    });
+
+    // ── HELPERS ─────────────────────────────
+    function formatDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function formatSize(bytes) {
+      if (!bytes) return '';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(0) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── DESIGN TAB (Hover) ────────────────
+    let designLoaded = false;
+    async function loadDesign() {
+      if (designLoaded) return;
+      designLoaded = true;
+
+      const loading = document.getElementById('design-loading');
+      const content = document.getElementById('design-content');
+      const unavail = document.getElementById('design-unavailable');
+
+      try {
+        const res = await fetch(`/api/portal/${TOKEN}/design`);
+        const data = await res.json();
+        loading.style.display = 'none';
+
+        if (data.available && data.embedUrl) {
+          document.getElementById('hover-iframe').src = data.embedUrl;
+          content.style.display = 'block';
+        } else {
+          unavail.style.display = 'block';
+        }
+      } catch {
+        loading.style.display = 'none';
+        unavail.style.display = 'block';
+      }
+    }
+
+    // ── HOME VALUE ─────────────────────────
+    async function loadHomeValue() {
+      try {
+        const res = await fetch(`/api/portal/${TOKEN}/home-value`);
+        const data = await res.json();
+        if (!data.available) return;
+
+        const fmt = (n) => '$' + n.toLocaleString('en-US');
+        document.getElementById('hv-current').textContent = fmt(data.currentValue);
+        document.getElementById('hv-projected').textContent = fmt(data.projectedValue);
+        document.getElementById('hv-message').textContent =
+          `Your home is worth ${fmt(data.currentValue)} today. A new roof typically adds ${fmt(data.addedValue)} to your home's value.`;
+        document.getElementById('home-value-card').style.display = 'block';
+      } catch { /* API not configured — hide card */ }
+    }
+
+    // ── BOOT ────────────────────────────────
+    init();
+  </script>
+</body>
+</html>

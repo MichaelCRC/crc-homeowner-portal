@@ -9,7 +9,7 @@ try {
 }
 
 async function sendEmail({ to, subject, text, html }) {
-  if (!sgMail || !process.env.SENDGRID_API_KEY) {
+  if (!sgMail | !process.env.SENDGRID_API_KEY) {
     console.log('[Email] SendGrid not configured. Would send:', { to, subject });
     return { success: false, reason: 'SendGrid not configured' };
   }
@@ -20,7 +20,7 @@ async function sendEmail({ to, subject, text, html }) {
       from: { email: 'claims@columbusroofingco.com', name: 'Columbus Roofing Company' },
       subject,
       text,
-      html: html || text
+      html: html | text
     });
     return { success: true };
   } catch (err) {
@@ -39,12 +39,12 @@ async function sendHomeownerMessage(job, messageBody) {
 }
 
 async function sendPortalLink(job) {
-  const portalUrl = `${process.env.BASE_URL || 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
+  const portalUrl = `${process.env.BASE_URL | 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
   return sendEmail({
     to: job.homeowner.email,
     subject: 'Your CRC Project Portal',
-    text: `${job.homeowner.name},\n\nYour Columbus Roofing Company project portal is ready.\n\nAccess your portal here:\n${portalUrl}\n\nThis link is unique to your project. You can check your claim status, upload documents, view photos, and message our team at any time.\n\nColumbus Roofing Company\n(614) 743-1481`,
-    html: `<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px"><p>${job.homeowner.name},</p><p>Your Columbus Roofing Company project portal is ready.</p><p><a href="${portalUrl}" style="display:inline-block;padding:14px 32px;background:#111;color:#fff;text-decoration:none;font-weight:700;letter-spacing:0.5px">VIEW YOUR PORTAL</a></p><p style="color:#666;font-size:13px">This link is unique to your project. You can check your claim status, upload documents, view photos, and message our team at any time.</p><hr style="border:none;border-top:1px solid #ddd;margin:30px 0"><p style="font-weight:700">Columbus Roofing Company</p><p style="color:#666">(614) 743-1481</p></div>`
+    text: `${job.homeowner.name},\n\nYour Columbus Roofing Company project portal is ready.\n\nAccess your portal here:\n${portalUrl}\n\nThis link is unique to your project. You can check your claim status, upload documents, view photos, and message our team at any time.\n\nColumbus Roofing Company\n`,
+    html: `<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px"><p>${job.homeowner.name},</p><p>Your Columbus Roofing Company project portal is ready.</p><p><a href="${portalUrl}" style="display:inline-block;padding:14px 32px;background:#111;color:#fff;text-decoration:none;font-weight:700;letter-spacing:0.5px">VIEW YOUR PORTAL</a></p><p style="color:#666;font-size:13px">This link is unique to your project. You can check your claim status, upload documents, view photos, and message our team at any time.</p><hr style="border:none;border-top:1px solid #ddd;margin:30px 0"><p style="font-weight:700">Columbus Roofing Company</p><p style="color:#666"></p></div>`
   });
 }
 
@@ -76,7 +76,7 @@ async function sendStageNotification(job, newStage) {
   const notification = STAGE_NOTIFICATIONS[newStage];
   if (!notification) return { success: false, reason: 'No notification for this stage' };
 
-  const portalUrl = `${process.env.BASE_URL || 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
+  const portalUrl = `${process.env.BASE_URL | 'https://crc-homeowner-portal.onrender.com'}/portal/${job.token}`;
 
   return sendEmail({
     to: job.homeowner.email,
@@ -92,10 +92,10 @@ async function sendStageNotification(job, newStage) {
       </div>
       <div style="padding:20px 24px;border-top:1px solid #e5e5e5">
         <p style="font-size:12px;color:#999999;margin:0">Columbus Roofing Company</p>
-        <p style="font-size:12px;color:#999999;margin:4px 0 0">(614) 743-1481 &middot; claims@columbusroofingco.com</p>
+        <p style="font-size:12px;color:#999999;margin:4px 0 0"> &middot; claims@columbusroofingco.com</p>
       </div>
     </div>`,
-    text: `${job.homeowner.name},\n\n${notification.message}\n\nView your portal: ${portalUrl}\n\nColumbus Roofing Company\n(614) 743-1481`
+    text: `${job.homeowner.name},\n\n${notification.message}\n\nView your portal: ${portalUrl}\n\nColumbus Roofing Company\n`
   });
 }
 
